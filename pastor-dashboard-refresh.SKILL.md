@@ -9,7 +9,7 @@ You are refreshing Aaron Taylor's Personal Dashboard for Ford Street United Meth
 
 ## Data Locations
 - **Google Drive mounted locally**: `G:\My Drive` (check if this path exists; if not, look for alternative paths like `G:\My Drive\...` or check OneDrive/Dropbox folders)
-- **Vault files** (Obsidian): Look in the mounted Drive for folders like `[01] Personal`, `Obsidian`, `Main Vault`
+- **Work folder**: `G:\My Drive\[02] Work\` - contains all dashboard data files
 - **Skills folder**: Look for `Claude Skills` or similar in the Drive
 
 ## Action Queue
@@ -183,7 +183,7 @@ Action buttons use `data-action="queue-action"` with JSON payloads.
 
 # 5. Worship/Sermon Region (WORSHIP_SECTION)
 
-**Data source**: `G:\My Drive\[01] Personal\[01] Obsidian\Sermon Workflow Tracker.md` (vault root for easy access)
+**Data source**: `G:\My Drive\[02] Work\Sermon Workflow Tracker.md`
 
 This region has:
 1. Navigation row (prev/next week)
@@ -244,7 +244,7 @@ This region has:
 
 # 6. Tasks Region (TASKS_SECTION)
 
-**Data source**: Task List file in vault
+**Data source**: `G:\My Drive\[02] Work\Task List.md`
 
 Format: `- [ ] TASK TEXT _(source: SOURCE, added DATE)_`
 
@@ -269,7 +269,7 @@ If no tasks: `<div class="empty-state">Nothing on your task list right now.</div
 
 # 7. Pastoral Check-Ins Region (TEXT3_SECTION)
 
-**Data source**: Congregation Contacts.csv and Message Log
+**Data source**: `G:\My Drive\[02] Work\Pastoral Care\Congregation Contacts.csv` and `G:\My Drive\[02] Work\Pastoral Care\Message Log.md`
 
 Find 3 people to contact:
 - Never messaged, OR
@@ -305,7 +305,7 @@ If everyone contacted in last 60 days: `<div class="empty-state">Everyone's been
 
 # 8. Prayer List Region (PRAYER_SECTION)
 
-**Data source**: Prayer List file in vault
+**Data source**: `G:\My Drive\[02] Work\Pastoral Care\Prayer List.md`
 
 Format: `- [ ] **Name** — Request _(added Date, PR-N)_`
 
