@@ -183,7 +183,7 @@ Action buttons use `data-action="queue-action"` with JSON payloads.
 
 # 5. Worship/Sermon Region (WORSHIP_SECTION)
 
-**Data source**: Sermon Workflow Tracker file in vault
+**Data source**: `G:\My Drive\[01] Personal\[01] Obsidian\Sermon Workflow Tracker.md` (vault root for easy access)
 
 This region has:
 1. Navigation row (prev/next week)
