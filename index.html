@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aaron's Personal Dashboard</title>
+  <style>
+    :root {
+      --paper: #EDF0EC;
+      --surface: #F8FAF7;
+      --surface-raised: #FFFFFF;
+      --ink: #212A20;
+      --ink-soft: #5B6459;
+      --ink-faint: #8B9389;
+      --line: #D7DCD5;
+      --accent: #A87C2C;
+      --accent-ink: #FCFAF5;
+      --tier-critical: #B5473A;
+      --tier-critical-bg: #F6E7E4;
+      --tier-pastoral: #A87C2C;
+      --tier-pastoral-bg: #F3E9D8;
+      --tier-low: #4F6E68;
+      --tier-low-bg: #E3EBE8;
+      --shadow: 0 1px 2px rgba(33, 42, 32, 0.04), 0 6px 20px rgba(33, 42, 32, 0.05);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1A201A;
+        --surface: #212820;
+        --surface-raised: #262E25;
+        --ink: #E9EDE6;
+        --ink-soft: #AAB4A5;
+        --ink-faint: #75806F;
+        --line: #333C30;
+        --accent: #D9AC5E;
+        --accent-ink: #23200F;
+        --tier-critical: #E0897B;
+        --tier-critical-bg: #3A2621;
+        --tier-pastoral: #D9AC5E;
+        --tier-pastoral-bg: #3A311F;
+        --tier-low: #8FB4AC;
+        --tier-low-bg: #223330;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.25);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --paper: #1A201A;
+      --surface: #212820;
+      --surface-raised: #262E25;
+      --ink: #E9EDE6;
+      --ink-soft: #AAB4A5;
+      --ink-faint: #75806F;
+      --line: #333C30;
+      --accent: #D9AC5E;
+      --accent-ink: #23200F;
+      --tier-critical: #E0897B;
+      --tier-critical-bg: #3A2621;
+      --tier-pastoral: #D9AC5E;
+      --tier-pastoral-bg: #3A311F;
+      --tier-low: #8FB4AC;
+      --tier-low-bg: #223330;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    :root[data-theme="light"] {
+      --paper: #EDF0EC;
+      --surface: #F8FAF7;
+      --surface-raised: #FFFFFF;
+      --ink: #212A20;
+      --ink-soft: #5B6459;
+      --ink-faint: #8B9389;
+      --line: #D7DCD5;
+      --accent: #A87C2C;
+      --accent-ink: #FCFAF5;
+      --tier-critical: #B5473A;
+      --tier-critical-bg: #F6E7E4;
+      --tier-pastoral: #A87C2C;
+      --tier-pastoral-bg: #F3E9D8;
+      --tier-low: #4F6E68;
+      --tier-low-bg: #E3EBE8;
+      --shadow: 0 1px 2px rgba(33, 42, 32, 0.04), 0 6px 20px rgba(33, 42, 32, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Public Sans', -apple-system, sans-serif;
+      font-variant-numeric: tabular-nums;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 72px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 28px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: block;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-family: 'Newsreader', serif;
+      font-weight: 500;
+      font-size: 34px;
+      margin: 0;
+      text-wrap: balance;
+      letter-spacing: -0.01em;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--ink-soft);
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 7px;
+    }
+
+    .who {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-align: right;
+    }
+
+    .sync-button {
+      font-family: 'Public Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface);
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sync-button:hover {
+      background: var(--surface-raised);
+      color: var(--ink);
+    }
+
+    .sync-button.syncing {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .sync-button svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    section.panel {
+      margin-bottom: 20px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel-head h2 {
+      font-family: 'Newsreader', serif;
+      font-weight: 500;
+      font-style: italic;
+      font-size: 21px;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .panel-head-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item {
+      display: flex;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .tier-dot {
+      flex: none;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-top: 6px;
+    }
+
+    .tier-critical .tier-dot { background: var(--tier-critical); }
+    .tier-pastoral .tier-dot { background: var(--tier-pastoral); }
+    .tier-low .tier-dot { background: var(--tier-low); }
+
+    .item-body { flex: 1; min-width: 0; }
+    .item-top {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 3px;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .item-org {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    .item-time {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    .item-desc {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-wrap: pretty;
+    }
+
+    .item-tag {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-top: 7px;
+    }
+
+    .tier-critical .item-tag { color: var(--tier-critical); background: var(--tier-critical-bg); }
+    .tier-pastoral .item-tag { color: var(--tier-pastoral); background: var(--tier-pastoral-bg); }
+    .tier-low .item-tag { color: var(--tier-low); background: var(--tier-low-bg); }
+
+    .empty-state {
+      background: var(--surface);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 18px 16px;
+      font-size: 14px;
+      color: var(--ink-soft);
+      font-style: italic;
+      font-family: 'Newsreader', serif;
+    }
+
+    .subhead {
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 16px 0 10px;
+    }
+
+    .finished-content {
+      margin-top: 4px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .finished-content .subhead { margin: 0 0 10px; }
+    .finished-content-icons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .event-time {
+      flex: none;
+      width: 68px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      padding-top: 1px;
+    }
+
+    .event-time b {
+      display: block;
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    a { color: var(--accent); }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* This Week's Sermon panel */
+    .sermon-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 20px;
+      margin-bottom: 18px;
+    }
+
+    .info-field { min-width: 0; }
+    .info-label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 2px;
+    }
+
+    .info-value {
+      font-size: 14px;
+      color: var(--ink);
+      text-wrap: pretty;
+    }
+
+    .info-value.placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    .tracker {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin: 4px 0 20px;
+      overflow-x: auto;
+      padding: 6px 2px 2px;
+    }
+
+    .tracker-line {
+      position: absolute;
+      top: 15px;
+      left: 18px;
+      right: 18px;
+      height: 2px;
+      background: var(--line);
+      z-index: 0;
+    }
+
+    .tracker-node {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      min-width: 60px;
+    }
+
+    .tracker-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tracker-node.done .tracker-dot {
+      background: var(--tier-low);
+      border-color: var(--tier-low);
+    }
+
+    .tracker-node.done .tracker-dot::after {
+      content: "\2713";
+      color: var(--accent-ink);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .tracker-node.current .tracker-dot {
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent),
+                  0 0 14px 2px color-mix(in srgb, var(--accent) 55%, transparent);
+      animation: tracker-glow 1.8s ease-in-out infinite;
+    }
+
+    @keyframes tracker-glow {
+      0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent), 0 0 10px 1px color-mix(in srgb, var(--accent) 45%, transparent); }
+      50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 18px 4px color-mix(in srgb, var(--accent) 65%, transparent); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tracker-node.current .tracker-dot { animation: none; }
+    }
+
+    .tracker-label {
+      font-size: 11px;
+      color: var(--ink-faint);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tracker-node.current .tracker-label {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .tracker-node.done .tracker-label { color: var(--ink-soft); }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .cta-button {
+      font-family: 'Public Sans', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--accent-ink);
+      border: none;
+      border-radius: 20px;
+      padding: 10px 18px;
+      cursor: pointer;
+    }
+
+    .cta-button:hover { opacity: 0.9; }
+
+    .cta-button-secondary {
+      font-family: 'Public Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 9px 16px;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+
+    .cta-toast {
+      font-size: 12.5px;
+      color: var(--tier-low);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .cta-toast.show { opacity: 1; }
+
+    .copy-fallback-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .copy-fallback-overlay.show { display: flex; }
+    .copy-fallback-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+
+    .copy-fallback-label {
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-bottom: 10px;
+    }
+
+    .copy-fallback-text {
+      width: 100%;
+      min-height: 90px;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      resize: vertical;
+      margin-bottom: 12px;
+    }
+
+    .start-form {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .start-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .start-form input[type="text"] {
+      font-family: 'Public Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .start-form input[type="checkbox"] {
+      margin-right: 6px;
+    }
+
+    .start-form .checkbox-label {
+      flex-direction: row;
+      align-items: center;
+      flex: none;
+      width: auto;
+    }
+
+    .new-series-fields {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .new-series-fields.show { display: flex; }
+
+    /* Sermon nav */
+    .sermon-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sermon-nav-arrow {
+      background: none;
+      border: none;
+      color: var(--ink-soft);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .sermon-nav-arrow:hover {
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .sermon-nav-date {
+      font-family: 'Newsreader', serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    /* Tasks panel */
+    .task-add-row {
+      display: none;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .task-add-row.show { display: flex; }
+
+    .task-input {
+      flex: 1;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+
+    .task-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .task-text {
+      font-size: 14px;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .task-source {
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-left: 8px;
+    }
+
+    /* Pastoral Check-Ins */
+    .checkin-person {
+      margin-bottom: 12px;
+    }
+
+    .checkin-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .checkin-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .checkin-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .note-row {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .note-row.show { display: flex; }
+
+    .note-input {
+      width: 100%;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* Prayer List */
+    .prayer-add-row {
+      display: none;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .prayer-add-row.show { display: flex; }
+
+    .prayer-name-input {
+      width: 120px;
+      flex: none;
+    }
+
+    .prayer-request-input {
+      flex: 1;
+    }
+
+    /* Icon buttons */
+    .icon-button {
+      background: none;
+      border: none;
+      color: var(--ink-soft);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-button:hover {
+      background: var(--surface-raised);
+      color: var(--ink);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 10px;
+    }
+
+    /* Deliverables row */
+    .deliverables-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .deliverable-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--ink-soft);
+    }
+
+    .deliverable-item:hover {
+      color: var(--accent);
+    }
+
+    .deliverable-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .deliverable-item:hover .deliverable-circle {
+      border-color: var(--accent);
+    }
+
+    .deliverable-circle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .deliverable-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Public Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Hidden inputs for start form */
+    #start-date { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <span class="eyebrow">Personal Dashboard</span>
+        <h1>Aaron's <em>Dashboard</em></h1>
+      </div>
+      <div class="meta">
+        <span class="who">Ford Street UMC</span>
+        <button class="sync-button" id="sync-button" data-action="sync-dashboard" title="Sync dashboard data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2v6h-6"></path>
+            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+            <path d="M3 22v-6h6"></path>
+            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+          </svg>
+          <span>Sync</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- WORSHIP_SECTION_START -->
+    <section class="panel" id="worship-panel">
+      <div class="panel-head">
+        <h2>This Week's Sermon</h2>
+      </div>
+      <!-- Sermon content will be inserted here by the refresh skill -->
+      <div id="sermon-content">
+        <!-- Sermon tracker will be rendered here -->
+      </div>
+    </section>
+    <!-- WORSHIP_SECTION_END -->
+
+    <!-- TEXT3_SECTION_START -->
+    <section class="panel" id="checkin-panel">
+      <div class="panel-head">
+        <h2>Pastoral Check-Ins</h2>
+      </div>
+      <!-- Check-in content will be inserted here by the refresh skill -->
+      <div id="checkin-content">
+        <!-- Check-in persons will be rendered here -->
+      </div>
+    </section>
+    <!-- TEXT3_SECTION_END -->
+
+    <!-- TASKS_SECTION_START -->
+    <section class="panel" id="tasks-panel">
+      <div class="panel-head">
+        <h2>Tasks</h2>
+        <div class="panel-head-actions">
+          <button class="icon-button" data-action="toggle-task-add" aria-label="Add task" title="Add Task">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="task-add-row" id="task-add-row" style="display:none;">
+        <input type="text" class="task-input" id="task-input" placeholder="Add a task...">
+        <button class="icon-button" data-action="add-task" data-target="task-input" aria-label="Add task" title="Add Task">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+      <!-- Tasks content will be inserted here by the refresh skill -->
+      <div class="task-list" id="task-list">
+        <!-- Tasks will be rendered here -->
+      </div>
+    </section>
+    <!-- TASKS_SECTION_END -->
+
+    <!-- CALENDAR_SECTION_START -->
+    <section class="panel" id="calendar-panel">
+      <div class="panel-head">
+        <h2>Calendar</h2>
+      </div>
+      <!-- Calendar content will be inserted here by the refresh skill -->
+      <div class="items" id="calendar-items">
+        <!-- Events will be rendered here -->
+      </div>
+    </section>
+    <!-- CALENDAR_SECTION_END -->
+
+    <!-- EMAIL_SECTION_START -->
+    <section class="panel" id="email-panel">
+      <div class="panel-head">
+        <h2>Needs Reply</h2>
+      </div>
+      <!-- Email content will be inserted here by the refresh skill -->
+      <ul class="items" id="email-items">
+        <!-- Email threads will be rendered here -->
+      </ul>
+    </section>
+    <!-- EMAIL_SECTION_END -->
+
+    <!-- PRAYER_SECTION_START -->
+    <section class="panel" id="prayer-panel">
+      <div class="panel-head">
+        <h2>Prayer List</h2>
+        <div class="panel-head-actions">
+          <button class="icon-button" data-action="toggle-prayer-add" aria-label="Add prayer request" title="Add Prayer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="prayer-add-row" id="prayer-add-row" style="display:none;">
+        <input type="text" class="task-input prayer-name-input" id="prayer-add-name" placeholder="Name">
+        <input type="text" class="task-input prayer-request-input" id="prayer-add-request" placeholder="Prayer request...">
+        <button class="icon-button" data-action="add-prayer-manual" aria-label="Add prayer request" title="Add Prayer Request">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+      <!-- Prayer content will be inserted here by the refresh skill -->
+      <ul class="items" id="prayer-items">
+        <!-- Prayer requests will be rendered here -->
+      </ul>
+    </section>
+    <!-- PRAYER_SECTION_END -->
+
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Copy fallback overlay -->
+  <div class="copy-fallback-overlay" id="copy-fallback-overlay">
+    <div class="copy-fallback-box">
+      <div class="copy-fallback-label" id="copy-fallback-label"></div>
+      <textarea class="copy-fallback-text" id="copy-fallback-text" readonly></textarea>
+      <button class="cta-button" id="copy-fallback-close">Close</button>
+    </div>
+  </div>
+
+  <script type="application/json" id="sermon-data">
+    <!-- Sermon data JSON will be inserted here by the refresh skill -->
+    {"activeDate": "", "weeks": {}, "notStartedActiveHtml": "", "pastEmptyHtml": "", "futureEmptyHtml": ""}
+  </script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================================================
+      // MiniMax Code Dashboard Bridge Functions
+      // ============================================================
+      // These replace the Cowork-specific window.cowork.* functions
+      // with implementations that work in a standalone browser context.
+
+      var DASHBOARD_ACTION_QUEUE_KEY = 'pastor_dashboard_action_queue';
+
+      /**
+       * Queue an action to be processed by the refresh skill.
+       * Actions are stored in localStorage and processed when Sync is clicked.
+       */
+      function queueAction(el, payload, callback) {
+        try {
+          var queue = JSON.parse(localStorage.getItem(DASHBOARD_ACTION_QUEUE_KEY) || '[]');
+          queue.push({
+            payload: payload,
+            timestamp: new Date().toISOString()
+          });
+          localStorage.setItem(DASHBOARD_ACTION_QUEUE_KEY, JSON.stringify(queue));
+
+          toast(el, 'Action queued - click Sync to apply');
+
+          if (callback && typeof callback === 'function') {
+            // For immediate UI updates (like marking someone messaged today)
+            // We can call the callback to update the UI optimistically
+            // The actual data will be corrected on next refresh
+            setTimeout(callback, 100);
+          }
+        } catch (e) {
+          toast(el, 'Error queueing action');
+          console.error('queueAction error:', e);
+        }
+      }
+
+      /**
+       * Trigger a dashboard refresh.
+       * In MiniMax Code, this copies a prompt to clipboard that the user
+       * can paste into a chat with Mavis to run the refresh skill.
+       */
+      function triggerRefresh() {
+        var btn = document.getElementById('sync-button');
+        if (btn) {
+          btn.classList.add('syncing');
+          btn.querySelector('span').textContent = 'Syncing...';
+        }
+
+        // Copy the refresh prompt to clipboard
+        var prompt = 'Please run the dashboard refresh skill to update my personal dashboard. ' +
+                     'Check the action queue in localStorage (key: ' + DASHBOARD_ACTION_QUEUE_KEY + ') ' +
+                     'for any pending actions to process.';
+
+        navigator.clipboard.writeText(prompt).then(function() {
+          toast(document.body, 'Refresh prompt copied to clipboard - paste it in chat with Mavis');
+        }).catch(function() {
+          // Fallback for browsers that don't support clipboard API
+          showCopyFallback(prompt, 'Copy this prompt and paste it in chat with Mavis to refresh the dashboard:');
+        });
+
+        // Reset button after a delay
+        setTimeout(function() {
+          if (btn) {
+            btn.classList.remove('syncing');
+            btn.querySelector('span').textContent = 'Sync';
+          }
+        }, 3000);
+      }
+
+      /**
+       * Copy text to clipboard with fallback for older browsers.
+       */
+      function robustCopy(text, callback) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() {
+            if (callback) callback(true);
+          }).catch(function() {
+            if (callback) callback(false);
+          });
+        } else {
+          // Fallback: use textarea hack
+          var textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            if (callback) callback(true);
+          } catch (e) {
+            if (callback) callback(false);
+          }
+          document.body.removeChild(textarea);
+        }
+      }
+
+      /**
+       * Copy text directly to clipboard (for copy-prompt actions).
+       */
+      function copyText(el, text) {
+        robustCopy(text, function(copied) {
+          if (copied) {
+            toast(el, 'Copied to clipboard');
+          } else {
+            showCopyFallback(text, 'Copy this prompt:');
+          }
+        });
+      }
+
+      /**
+       * Show the copy fallback overlay.
+       */
+      function showCopyFallback(text, label) {
+        var overlay = document.getElementById('copy-fallback-overlay');
+        var textEl = document.getElementById('copy-fallback-text');
+        var labelEl = document.getElementById('copy-fallback-label');
+
+        if (labelEl) labelEl.textContent = label || 'Copy this:';
+        if (textEl) textEl.value = text;
+        if (overlay) overlay.classList.add('show');
+      }
+
+      /**
+       * Show a toast notification.
+       */
+      function toast(el, message) {
+        var toastEl = document.getElementById('toast');
+        if (!toastEl) return;
+
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+
+        setTimeout(function() {
+          toastEl.classList.remove('show');
+        }, 2500);
+      }
+
+      /**
+       * Generate a fallback check-in message.
+       */
+      function fallbackCheckinMessage(firstName) {
+        return "Hey " + firstName + "! Just checking in and seeing how you're doing. Is there anything I can be praying for?";
+      }
+
+      /**
+       * Extract text from askClaude response (for future use).
+       */
+      function extractAskClaudeText(r) {
+        if (!r) return '';
+        if (typeof r === 'string') return r;
+        if (typeof r.text === 'string') return r.text;
+        if (typeof r.output === 'string') return r.output;
+        if (typeof r.response === 'string') return r.response;
+        if (r.content && r.content[0]) {
+          if (typeof r.content[0] === 'string') return r.content[0];
+          if (typeof r.content[0].text === 'string') return r.content[0].text;
+        }
+        if (r.structuredContent && typeof r.structuredContent.text === 'string') return r.structuredContent.text;
+        return '';
+      }
+
+      function isMobileBrowser() {
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+      }
+
+      function openSmsDraft(el, phone, firstName, body, winHandle) {
+        var mobile = isMobileBrowser();
+        robustCopy(body, function (copied) {
+          if (mobile) {
+            toast(el, copied ? 'Message copied — opening Messages…' : 'Opening Messages…');
+            window.location.href = 'sms:' + phone + '?&body=' + encodeURIComponent(body);
+            return;
+          }
+          if (winHandle && !winHandle.closed) {
+            if (copied) {
+              toast(el, 'Message copied — paste it once Messages opens');
+            } else {
+              toast(el, 'Messages is open — copy the message below to send it');
+              showCopyFallback(
+                body,
+                'Text ' + (firstName || 'them') + ' at ' + phone + ' — copy this message, then paste it into the Messages tab that just opened (Ctrl/Cmd+V).'
+              );
+            }
+          } else {
+            toast(el, "Couldn't open Messages automatically — see below");
+            showCopyFallback(
+              'Text ' + (firstName || 'them') + ' at ' + phone + ':\n\n' + body,
+              "Couldn't open Google Messages automatically in this view. Copy the message below, then open messages.google.com/web (or your usual texting app) and send it to " + (firstName || 'them') + " at " + phone + "."
+            );
+          }
+        });
+      }
+
+      function startCheckinText(el) {
+        var phone = el.dataset.phone;
+        var firstName = el.dataset.firstName || '';
+        if (!phone) {
+          toast(el, 'No phone number on file');
+          return;
+        }
+        var fallback = fallbackCheckinMessage(firstName);
+        var mobile = isMobileBrowser();
+
+        var winHandle = null;
+        if (!mobile) {
+          var url = 'https://messages.google.com/web/conversations/new?number=' + encodeURIComponent(phone);
+          try {
+            winHandle = window.open(url, '_blank');
+          } catch (e) {
+            winHandle = null;
+          }
+        }
+
+        function finish(text) {
+          openSmsDraft(el, phone, firstName, text, winHandle);
+        }
+
+        // In MiniMax Code, we could call an LLM here if we had an API endpoint
+        // For now, use the fallback message
+        finish(fallback);
+      }
+
+      function buildStartPrompt() {
+        var seriesEl = document.getElementById('start-series');
+        var scriptureEl = document.getElementById('start-scripture');
+        var series = seriesEl ? seriesEl.value.trim() : '';
+        var scripture = scriptureEl ? scriptureEl.value.trim() : '';
+        var newSeriesEl = document.getElementById('start-new-series');
+        var isNew = !!(newSeriesEl && newSeriesEl.checked);
+        var bulletinEl = document.getElementById('start-bulletin-link');
+        var slidesEl = document.getElementById('start-slides-link');
+        var bulletinLink = bulletinEl ? bulletinEl.value.trim() : '';
+        var slidesLink = slidesEl ? slidesEl.value.trim() : '';
+        var dateEl = document.getElementById('start-date');
+        var targetDate = dateEl ? dateEl.value : (SERMON_DATA ? SERMON_DATA.activeDate : '');
+        var dateLabel = targetDate ? formatSundayLabel(targetDate) : 'this coming Sunday';
+
+        var prompt = "Let's get started on the sermon for " + dateLabel + '. Series: ' + series + '. Scripture: ' + scripture + '.';
+        if (isNew) {
+          prompt += ' This is a new series, update the bulletin-cover and sermon-slides skill templates.';
+          if (bulletinLink) prompt += ' New Bulletin Cover template: ' + bulletinLink + '.';
+          if (slidesLink) prompt += ' New Slides template: ' + slidesLink + '.';
+        }
+        return prompt;
+      }
+
+      // --- Sermon week date navigation ---
+      var SERMON_DATA = null;
+      var SERMON_CURRENT_DATE = null;
+
+      function loadSermonData() {
+        var el = document.getElementById('sermon-data');
+        if (!el) return;
+        try {
+          SERMON_DATA = JSON.parse(el.textContent || '{}');
+        } catch (e) {
+          SERMON_DATA = null;
+        }
+      }
+
+      function addDaysToDateStr(dateStr, n) {
+        var parts = dateStr.split('-').map(function (x) { return parseInt(x, 10); });
+        var d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+        d.setUTCDate(d.getUTCDate() + n);
+        var y = d.getUTCFullYear();
+        var m = String(d.getUTCMonth() + 1).padStart(2, '0');
+        var day = String(d.getUTCDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+      }
+
+      function formatSundayLabel(dateStr) {
+        var parts = dateStr.split('-').map(function (x) { return parseInt(x, 10); });
+        var d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+        try {
+          return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+        } catch (e) {
+          return dateStr;
+        }
+      }
+
+      function renderSermonWeek(dateStr) {
+        var body = document.getElementById('sermon-content');
+        var navDate = document.getElementById('sermon-nav-date');
+        if (!body || !SERMON_DATA) return;
+        SERMON_CURRENT_DATE = dateStr;
+        var isActive = (dateStr === SERMON_DATA.activeDate);
+        var label = formatSundayLabel(dateStr);
+
+        var html = SERMON_DATA.weeks && SERMON_DATA.weeks[dateStr];
+        if (!html) {
+          if (isActive) {
+            html = SERMON_DATA.notStartedActiveHtml || '';
+          } else if (dateStr < SERMON_DATA.activeDate) {
+            html = SERMON_DATA.pastEmptyHtml || '<div class="empty-state">No record for this week.</div>';
+          } else {
+            html = SERMON_DATA.futureEmptyHtml || '<div class="empty-state">Not started yet.</div>';
+          }
+        }
+        body.innerHTML = html;
+      }
+
+      function sermonNav(dir) {
+        if (!SERMON_DATA) return;
+        var base = SERMON_CURRENT_DATE || SERMON_DATA.activeDate;
+        renderSermonWeek(addDaysToDateStr(base, dir * 7));
+      }
+
+      // --- Event Listeners ---
+      document.addEventListener('click', function (e) {
+        var el = e.target.closest ? e.target.closest('[data-action]') : null;
+        if (!el) return;
+
+        var action = el.dataset.action;
+
+        if (action === 'sync-dashboard') {
+          triggerRefresh();
+        } else if (action === 'copy-prompt') {
+          copyText(el, el.dataset.prompt || '');
+        } else if (action === 'text-checkin') {
+          startCheckinText(el);
+        } else if (action === 'sermon-nav') {
+          sermonNav(parseInt(el.dataset.dir, 10) || 0);
+        } else if (action === 'queue-action') {
+          var payload = {};
+          try { payload = JSON.parse(el.dataset.payload || '{}'); } catch (e) { payload = {}; }
+          if (payload.type === 'mark-messaged') {
+            queueAction(el, payload, function () {
+              var checkinRow = el.closest('.checkin-person');
+              var orgEl = checkinRow ? checkinRow.querySelector('.item-org') : null;
+              if (orgEl) orgEl.textContent = 'Messaged today';
+            });
+          } else {
+            queueAction(el, payload);
+          }
+        } else if (action === 'toggle-start-form') {
+          var form = document.getElementById('start-form');
+          if (form) form.style.display = (form.style.display === 'flex') ? 'none' : 'flex';
+        } else if (action === 'submit-start-form') {
+          var seriesEl = document.getElementById('start-series');
+          var scriptureEl = document.getElementById('start-scripture');
+          var dateEl = document.getElementById('start-date');
+          if (!seriesEl || !seriesEl.value.trim() || !scriptureEl || !scriptureEl.value.trim()) {
+            toast(el, 'Enter series and scripture first');
+            return;
+          }
+          var newSeriesEl = document.getElementById('start-new-series');
+          var isNew = !!(newSeriesEl && newSeriesEl.checked);
+          var bulletinEl = document.getElementById('start-bulletin-link');
+          var slidesEl = document.getElementById('start-slides-link');
+          var payload = {
+            type: 'start-week',
+            date: dateEl ? dateEl.value : (SERMON_DATA ? SERMON_DATA.activeDate : ''),
+            series: seriesEl.value.trim(),
+            scripture: scriptureEl.value.trim(),
+            isNewSeries: isNew
+          };
+          if (isNew && bulletinEl && bulletinEl.value.trim()) payload.bulletinLink = bulletinEl.value.trim();
+          if (isNew && slidesEl && slidesEl.value.trim()) payload.slidesLink = slidesEl.value.trim();
+          queueAction(el, payload);
+        } else if (action === 'copy-note') {
+          var targetId = el.dataset.target;
+          var personId = el.dataset.person || '';
+          var ta = targetId ? document.getElementById(targetId) : null;
+          var note = ta ? ta.value.trim() : '';
+          if (!note) {
+            toast(el, 'Write a note first');
+            return;
+          }
+          queueAction(el, { type: 'log-note', personId: personId, note: note });
+          if (ta) ta.value = '';
+        } else if (action === 'toggle-note') {
+          var rowId = el.dataset.target;
+          var row = rowId ? document.getElementById(rowId) : null;
+          if (row) row.style.display = (row.style.display === 'flex') ? 'none' : 'flex';
+        } else if (action === 'toggle-task-add') {
+          var addRow = document.getElementById('task-add-row');
+          if (addRow) {
+            var opening = addRow.style.display !== 'flex';
+            addRow.style.display = opening ? 'flex' : 'none';
+            if (opening) {
+              var addInput = document.getElementById('task-input');
+              if (addInput) addInput.focus();
+            }
+          }
+        } else if (action === 'add-task') {
+          var taskInputId = el.dataset.target;
+          var taskInput = taskInputId ? document.getElementById(taskInputId) : null;
+          var taskText = taskInput ? taskInput.value.trim() : '';
+          if (!taskText) {
+            toast(el, 'Type a task first');
+            return;
+          }
+          queueAction(el, { type: 'add-task', text: taskText });
+          if (taskInput) taskInput.value = '';
+          var taskAddRow = taskInput ? taskInput.closest('.task-add-row') : null;
+          if (taskAddRow) taskAddRow.style.display = 'none';
+        } else if (action === 'toggle-prayer-add') {
+          var prayerAddRow = document.getElementById('prayer-add-row');
+          if (prayerAddRow) {
+            var prayerOpening = prayerAddRow.style.display !== 'flex';
+            prayerAddRow.style.display = prayerOpening ? 'flex' : 'none';
+            if (prayerOpening) {
+              var prayerNameInput = document.getElementById('prayer-add-name');
+              if (prayerNameInput) prayerNameInput.focus();
+            }
+          }
+        } else if (action === 'add-prayer-manual') {
+          var prayerNameEl = document.getElementById('prayer-add-name');
+          var prayerRequestEl = document.getElementById('prayer-add-request');
+          var prayerName = prayerNameEl ? prayerNameEl.value.trim() : '';
+          var prayerRequest = prayerRequestEl ? prayerRequestEl.value.trim() : '';
+          if (!prayerName || !prayerRequest) {
+            toast(el, 'Enter a name and request first');
+            return;
+          }
+          queueAction(el, { type: 'add-prayer', name: prayerName, request: prayerRequest });
+          if (prayerNameEl) prayerNameEl.value = '';
+          if (prayerRequestEl) prayerRequestEl.value = '';
+          var prayerRow = prayerNameEl ? prayerNameEl.closest('.prayer-add-row') : null;
+          if (prayerRow) prayerRow.style.display = 'none';
+        }
+      });
+
+      document.addEventListener('change', function (e) {
+        if (e.target && e.target.id === 'start-new-series') {
+          var fields = document.getElementById('new-series-fields');
+          if (fields) fields.style.display = e.target.checked ? 'flex' : 'none';
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        var el = e.target;
+        if (!el.classList || !el.classList.contains('task-input')) return;
+        var taskAddRowForEnter = el.closest('.task-add-row');
+        if (taskAddRowForEnter) {
+          e.preventDefault();
+          var btn = taskAddRowForEnter.querySelector('[data-action="add-task"]');
+          if (btn) btn.click();
+          return;
+        }
+        var prayerAddRowForEnter = el.closest('.prayer-add-row');
+        if (prayerAddRowForEnter) {
+          e.preventDefault();
+          var pbtn = prayerAddRowForEnter.querySelector('[data-action="add-prayer-manual"]');
+          if (pbtn) pbtn.click();
+        }
+      });
+
+      var copyFallbackOverlay = document.getElementById('copy-fallback-overlay');
+      var copyFallbackClose = document.getElementById('copy-fallback-close');
+      if (copyFallbackClose) {
+        copyFallbackClose.addEventListener('click', function () {
+          copyFallbackOverlay.classList.remove('show');
+        });
+      }
+      if (copyFallbackOverlay) {
+        copyFallbackOverlay.addEventListener('click', function (e) {
+          if (e.target === copyFallbackOverlay) copyFallbackOverlay.classList.remove('show');
+        });
+      }
+
+      // Initialize sermon data
+      loadSermonData();
+      if (SERMON_DATA && SERMON_DATA.activeDate) {
+        renderSermonWeek(SERMON_DATA.activeDate);
+      }
+
+      // Log initialization
+      console.log('Aaron\'s Personal Dashboard initialized');
+      console.log('Action queue key:', DASHBOARD_ACTION_QUEUE_KEY);
+
+    })();
+  </script>
+</body>
+</html>
