@@ -723,6 +723,74 @@
       min-height: 60px;
     }
 
+    /* Clickable name for copying message */
+    .item-name[data-action="copy-message"] {
+      cursor: pointer;
+    }
+    .item-name[data-action="copy-message"]:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* Strike-through when marked as messaged */
+    .checkin-person.messaged .item-name {
+      text-decoration: line-through;
+      color: var(--ink-faint);
+    }
+    .checkin-person.messaged .item-org {
+      display: none;
+    }
+    .checkin-person.messaged .messaged-date {
+      display: block;
+      font-size: 12px;
+      color: var(--tier-low);
+      font-weight: 600;
+    }
+
+    /* Circular action buttons */
+    .checkin-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .checkin-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+    }
+    .checkin-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    .notes-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .notes-btn:hover {
+      background: var(--tier-pastoral);
+      border-color: var(--tier-pastoral);
+      color: var(--accent-ink);
+    }
+    .notes-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
     /* Prayer List */
     .prayer-add-row {
       display: none;
@@ -920,37 +988,88 @@
       </div>
       <!-- Check-in content will be inserted here by the refresh skill -->
       <div id="checkin-content">
-        <div class="checkin-person">
+        <div class="checkin-person" data-person-id="0cd2eab4-6612-4101-9c98-ba7028f47fd8">
           <div class="checkin-row">
             <div class="checkin-info">
-              <span class="item-name">Andrea Baldwin</span>
+              <span class="item-name" data-action="copy-message" data-first-name="Andrea" data-person-id="0cd2eab4-6612-4101-9c98-ba7028f47fd8">Andrea Baldwin</span>
               <span class="item-org">Never messaged</span>
+              <span class="messaged-date"></span>
             </div>
             <div class="checkin-actions">
-              <button class="cta-button cta-button-secondary" data-action="text-checkin" data-phone="17656236770" data-first-name="Andrea">Text</button>
+              <button class="icon-button checkin-btn" data-action="mark-messaged" data-person-id="0cd2eab4-6612-4101-9c98-ba7028f47fd8" data-first-name="Andrea" title="Mark as messaged">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+              <button class="icon-button notes-btn" data-action="toggle-note" data-target="note-0cd2eab4-6612-4101-9c98-ba7028f47fd8" title="Add pastoral notes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </button>
             </div>
           </div>
-        </div>
-        <div class="checkin-person">
-          <div class="checkin-row">
-            <div class="checkin-info">
-              <span class="item-name">Danny Barmes</span>
-              <span class="item-org">Never messaged</span>
-            </div>
-            <div class="checkin-actions">
-              <button class="cta-button cta-button-secondary" data-action="text-checkin" data-phone="17656219022" data-first-name="Danny">Text</button>
-            </div>
+          <div class="note-row" id="note-0cd2eab4-6612-4101-9c98-ba7028f47fd8">
+            <textarea class="note-input" placeholder="Pastoral notes about Andrea..."></textarea>
+            <button class="cta-button" data-action="save-note" data-person-id="0cd2eab4-6612-4101-9c98-ba7028f47fd8">Save Note</button>
           </div>
         </div>
-        <div class="checkin-person">
+        <div class="checkin-person" data-person-id="d01a56d2-e81b-4df2-86df-bf2e1ed78c5f">
           <div class="checkin-row">
             <div class="checkin-info">
-              <span class="item-name">Rebecca Beach</span>
+              <span class="item-name" data-action="copy-message" data-first-name="Danny" data-person-id="d01a56d2-e81b-4df2-86df-bf2e1ed78c5f">Danny Barmes</span>
               <span class="item-org">Never messaged</span>
+              <span class="messaged-date"></span>
             </div>
             <div class="checkin-actions">
-              <button class="cta-button cta-button-secondary" data-action="text-checkin" data-phone="17656108076" data-first-name="Rebecca">Text</button>
+              <button class="icon-button checkin-btn" data-action="mark-messaged" data-person-id="d01a56d2-e81b-4df2-86df-bf2e1ed78c5f" data-first-name="Danny" title="Mark as messaged">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+              <button class="icon-button notes-btn" data-action="toggle-note" data-target="note-d01a56d2-e81b-4df2-86df-bf2e1ed78c5f" title="Add pastoral notes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </button>
             </div>
+          </div>
+          <div class="note-row" id="note-d01a56d2-e81b-4df2-86df-bf2e1ed78c5f">
+            <textarea class="note-input" placeholder="Pastoral notes about Danny..."></textarea>
+            <button class="cta-button" data-action="save-note" data-person-id="d01a56d2-e81b-4df2-86df-bf2e1ed78c5f">Save Note</button>
+          </div>
+        </div>
+        <div class="checkin-person" data-person-id="eb96bdb7-ba3b-4f49-a941-71785b466097">
+          <div class="checkin-row">
+            <div class="checkin-info">
+              <span class="item-name" data-action="copy-message" data-first-name="Rebecca" data-person-id="eb96bdb7-ba3b-4f49-a941-71785b466097">Rebecca Beach</span>
+              <span class="item-org">Never messaged</span>
+              <span class="messaged-date"></span>
+            </div>
+            <div class="checkin-actions">
+              <button class="icon-button checkin-btn" data-action="mark-messaged" data-person-id="eb96bdb7-ba3b-4f49-a941-71785b466097" data-first-name="Rebecca" title="Mark as messaged">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+              <button class="icon-button notes-btn" data-action="toggle-note" data-target="note-eb96bdb7-ba3b-4f49-a941-71785b466097" title="Add pastoral notes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="note-row" id="note-eb96bdb7-ba3b-4f49-a941-71785b466097">
+            <textarea class="note-input" placeholder="Pastoral notes about Rebecca..."></textarea>
+            <button class="cta-button" data-action="save-note" data-person-id="eb96bdb7-ba3b-4f49-a941-71785b466097">Save Note</button>
           </div>
         </div>
       </div>
@@ -1413,6 +1532,59 @@
           triggerRefresh();
         } else if (action === 'copy-prompt') {
           copyText(el, el.dataset.prompt || '');
+        } else if (action === 'copy-message') {
+          // Copy pastoral check-in message to clipboard
+          var firstName = el.dataset.firstName || '';
+          var personId = el.dataset.personId || '';
+          var message = "Hey " + firstName + "! Just checking in and seeing how you're doing. Is there anything I can be praying for?";
+          robustCopy(message, function(copied) {
+            if (copied) {
+              toast(el, 'Message copied - paste it to send');
+            } else {
+              showCopyFallback(message, 'Copy this message to send to ' + firstName + ':');
+            }
+          });
+        } else if (action === 'mark-messaged') {
+          // Mark person as messaged - strike through name and show "Messaged Today"
+          var personId = el.dataset.personId;
+          var personEl = el.closest('.checkin-person');
+          if (personEl) {
+            personEl.classList.add('messaged');
+            var dateSpan = personEl.querySelector('.messaged-date');
+            if (dateSpan) {
+              var today = new Date();
+              dateSpan.textContent = 'Messaged Today';
+            }
+            // Save to localStorage so it persists
+            var messagedKey = 'checkin_messaged_' + personId;
+            localStorage.setItem(messagedKey, new Date().toISOString());
+            toast(el, 'Marked as messaged');
+          }
+        } else if (action === 'toggle-note') {
+          // Toggle the note field for this person
+          var targetId = el.dataset.target;
+          var noteRow = targetId ? document.getElementById(targetId) : null;
+          if (noteRow) {
+            var isShowing = noteRow.style.display === 'flex';
+            noteRow.style.display = isShowing ? 'none' : 'flex';
+            if (!isShowing) {
+              var textarea = noteRow.querySelector('.note-input');
+              if (textarea) textarea.focus();
+            }
+          }
+        } else if (action === 'save-note') {
+          // Save pastoral note to localStorage
+          var personId = el.dataset.personId;
+          var noteRow = el.closest('.note-row');
+          var textarea = noteRow ? noteRow.querySelector('.note-input') : null;
+          var note = textarea ? textarea.value.trim() : '';
+          if (note) {
+            var noteKey = 'checkin_note_' + personId;
+            localStorage.setItem(noteKey, note);
+            toast(el, 'Note saved');
+          } else {
+            toast(el, 'Write a note first');
+          }
         } else if (action === 'text-checkin') {
           startCheckinText(el);
         } else if (action === 'sermon-nav') {
