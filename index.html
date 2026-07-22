@@ -1729,11 +1729,45 @@
         });
       }
 
+      // Load persisted check-in states
+      function loadCheckinStates() {
+        var checkinPersons = document.querySelectorAll('.checkin-person');
+        checkinPersons.forEach(function(person) {
+          var personId = person.dataset.personId;
+          if (!personId) return;
+          
+          // Check if marked as messaged
+          var messagedKey = 'checkin_messaged_' + personId;
+          var messagedDate = localStorage.getItem(messagedKey);
+          if (messagedDate) {
+            person.classList.add('messaged');
+            var dateSpan = person.querySelector('.messaged-date');
+            if (dateSpan) {
+              dateSpan.textContent = 'Messaged Today';
+            }
+          }
+          
+          // Load saved note
+          var noteKey = 'checkin_note_' + personId;
+          var savedNote = localStorage.getItem(noteKey);
+          if (savedNote) {
+            var noteRow = person.querySelector('.note-row');
+            var textarea = noteRow ? noteRow.querySelector('.note-input') : null;
+            if (textarea) {
+              textarea.value = savedNote;
+            }
+          }
+        });
+      }
+
       // Initialize sermon data
       loadSermonData();
       if (SERMON_DATA && SERMON_DATA.activeDate) {
         renderSermonWeek(SERMON_DATA.activeDate);
       }
+
+      // Load check-in states from localStorage
+      loadCheckinStates();
 
       // Log initialization
       console.log('Aaron\'s Personal Dashboard initialized');
