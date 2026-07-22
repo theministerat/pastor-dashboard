@@ -2038,16 +2038,32 @@
         if (pendingBrainstorm) {
           console.log('Found pending sermon-brainstorm action');
           
-          // Show a notification that we're processing
-          toast(document.body, 'Processing sermon brainstorm...');
+          // Call the webhook to notify Mavis
+          var webhookUrl = 'https://webhook.site/7dbe9c2a-8b0e-4421-b7d4-8d352a3eab78';
           
-          // Copy a prompt to clipboard for Mavis to process
-          var prompt = 'Please process the pending sermon-brainstorm action. Check localStorage key "pending_sermon_brainstorm" for the details. Read the research PDF and personal notes from Google Drive, run the sermon-brainstorm skill, create a PDF with the output, upload it to the same Drive folder, and update the dashboard with the link.';
-          
-          navigator.clipboard.writeText(prompt).then(function() {
-            toast(document.body, 'Processing queued - paste prompt in chat');
-          }).catch(function() {
-            showCopyFallback(prompt, 'Copy this prompt and paste in chat with Mavis to process:');
+          fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action: 'sermon-brainstorm',
+              timestamp: new Date().toISOString(),
+              researchPdfUrl: 'https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view',
+              personalNotesUrl: localStorage.getItem('personal_study_url') || ''
+            })
+          }).then(function(response) {
+            console.log('Webhook called successfully');
+            toast(document.body, 'Webhook triggered - Mavis will process shortly');
+          }).catch(function(error) {
+            console.error('Webhook call failed:', error);
+            toast(document.body, 'Triggering Mavis...');
+            
+            // Fallback: copy prompt to clipboard
+            var prompt = 'Please process the pending sermon-brainstorm action.';
+            navigator.clipboard.writeText(prompt).then(function() {
+              toast(document.body, 'Paste prompt in chat');
+            });
           });
         }
       }
