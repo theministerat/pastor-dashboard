@@ -923,7 +923,12 @@
 
     /* Hidden inputs for start form */
     #start-date { display: none; }
+
+    /* Google API overrides */
+    #google-api-script { display: none; }
   </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js" async defer></script>
 </head>
 <body>
   <div class="wrap">
@@ -975,6 +980,7 @@
 </div>
 <div class="cta-row">
   <button class="cta-button" id="upload-personal-notes-btn">Upload Personal Notes</button>
+  <input type="file" id="personal-notes-file-input" accept=".pdf,.doc,.docx,.txt,.md,.docx" style="display:none;">
   <span class="cta-toast">Action queued</span>
 </div>
 <div class="finished-content">
@@ -1779,31 +1785,136 @@
 
       // Handle Personal Notes upload button click
       var uploadNotesBtn = document.getElementById('upload-personal-notes-btn');
-      var personalStudyFile = document.getElementById('personal-study-file');
-      if (uploadNotesBtn) {
+      var personalNotesFileInput = document.getElementById('personal-notes-file-input');
+      
+      if (uploadNotesBtn && personalNotesFileInput) {
         uploadNotesBtn.addEventListener('click', function() {
-          // Show prompt for Google Drive URL
-          var currentUrl = localStorage.getItem('personal_study_url') || '';
-          var url = prompt('Paste your Google Drive URL for your Personal Notes:', currentUrl);
-          if (url && url.trim()) {
-            url = url.trim();
-            localStorage.setItem('personal_study_url', url);
+          personalNotesFileInput.click();
+        });
+        
+        personalNotesFileInput.addEventListener('change', function(e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          
+          uploadNotesBtn.textContent = 'Uploading...';
+          uploadNotesBtn.disabled = true;
+          
+          uploadToGoogleDrive(file, function(driveUrl) {
+            uploadNotesBtn.textContent = 'Upload Personal Notes';
+            uploadNotesBtn.disabled = false;
+            personalNotesFileInput.value = ''; // Reset file input
             
-            // Update the link href
-            var notesLink = document.getElementById('personal-notes-link');
-            if (notesLink) {
-              notesLink.href = url;
+            if (driveUrl) {
+              localStorage.setItem('personal_study_url', driveUrl);
+              
+              // Update the link href
+              var notesLink = document.getElementById('personal-notes-link');
+              if (notesLink) {
+                notesLink.href = driveUrl;
+              }
+              
+              // Show the Personal Notes deliverable
+              var notesDeliverable = document.getElementById('personal-notes-deliverable');
+              if (notesDeliverable) {
+                notesDeliverable.style.display = 'inline-flex';
+              }
+              
+              toast(uploadNotesBtn, 'Personal Notes uploaded to Drive!');
+            } else {
+              toast(uploadNotesBtn, 'Upload failed. Try again.');
             }
-            
-            // Show the Personal Notes deliverable
-            var notesDeliverable = document.getElementById('personal-notes-deliverable');
-            if (notesDeliverable) {
-              notesDeliverable.style.display = 'inline-flex';
+          });
+        });
+      }
+      
+      // Google Drive upload function
+      function uploadToGoogleDrive(file, callback) {
+        var CLIENT_ID = '164075956592-p6s7lrd3l9a66hg9smuvgm0ihtcqajfv.apps.googleusercontent.com';
+        var SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        
+        // Initialize token client
+        var tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: function(response) {
+            if (response.error !== undefined) {
+              callback(null);
+              return;
             }
+            var accessToken = response.access_token;
             
-            toast(uploadNotesBtn, 'Personal Notes link saved');
+            // First, get the parent folder of the Research PDF
+            getResearchPDFFolder(accessToken, function(folderId) {
+              if (!folderId) {
+                // If we can't find the folder, upload to root
+                uploadFileToDrive(file, null, accessToken, callback);
+              } else {
+                uploadFileToDrive(file, folderId, accessToken, callback);
+              }
+            });
           }
         });
+        
+        // Request access token
+        tokenClient.requestAccessToken();
+      }
+      
+      // Get the parent folder of the Research PDF
+      function getResearchPDFFolder(accessToken, callback) {
+        var fileId = '1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t';
+        
+        if (!accessToken) {
+          callback(null);
+          return;
+        }
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://www.googleapis.com/drive/v3/files/' + fileId + '?fields=parents');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.parents && response.parents.length > 0) {
+              callback(response.parents[0]);
+            } else {
+              callback(null); // No parent folder
+            }
+          } else if (xhr.readyState === 4) {
+            callback(null); // Error, upload to root
+          }
+        };
+        xhr.send();
+      }
+      
+      // Upload file to Google Drive
+      function uploadFileToDrive(file, folderId, accessToken, callback) {
+        var metadata = {
+          'name': file.name,
+          'mimeType': file.type || 'application/octet-stream'
+        };
+        
+        if (folderId) {
+          metadata.parents = [folderId];
+        }
+        
+        var form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        form.append('file', file);
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            // Get the web view link
+            var webViewLink = 'https://drive.google.com/file/d/' + response.id + '/view';
+            callback(webViewLink);
+          } else if (xhr.readyState === 4) {
+            callback(null);
+          }
+        };
+        xhr.send(form);
       }
 
       // Load persisted Personal Notes
