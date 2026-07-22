@@ -978,6 +978,7 @@
   <button class="cta-button" id="sermon-brainstorm-btn">Sermon Brainstorm</button>
   <span class="cta-toast">Copied to clipboard!</span>
 </div>
+
 <div class="finished-content">
   <span class="subhead">This Week's Deliverables</span>
   <div class="finished-content-icons" id="deliverables-container">
@@ -1908,6 +1909,34 @@
         });
       }
 
+      // Handle Sermon Brainstorm button click - copy prompt to clipboard
+      var sermonBrainstormBtn = document.getElementById('sermon-brainstorm-btn');
+      if (sermonBrainstormBtn) {
+        sermonBrainstormBtn.addEventListener('click', function() {
+          // Get current sermon info from the page
+          var seriesEls = document.querySelectorAll('.sermon-info .info-value');
+          var series = seriesEls[0] ? seriesEls[0].textContent : 'Current Series';
+          var scripture = seriesEls[1] ? seriesEls[1].textContent : 'Current Passage';
+          
+          // Build the prompt for sermon-brainstorm skill
+          var prompt = 'Please run the sermon-brainstorm skill with me.\n\n' +
+            'Series: ' + series + '\n' +
+            'Scripture: ' + scripture + '\n\n' +
+            'I have my research PDF and personal notes ready to share.';
+          
+          // Copy to clipboard
+          navigator.clipboard.writeText(prompt).then(function() {
+            var toast = sermonBrainstormBtn.closest('.cta-row').querySelector('.cta-toast');
+            if (toast) {
+              toast.classList.add('show');
+              setTimeout(function() { toast.classList.remove('show'); }, 2000);
+            }
+          }).catch(function() {
+            alert('Could not copy to clipboard. Please copy this manually:\n\n' + prompt);
+          });
+        });
+      }
+
       // Handle Get Refresh Token button click
       var refreshTokenBtn = document.getElementById('get-refresh-token-btn');
       if (refreshTokenBtn) {
@@ -2109,13 +2138,44 @@
         }
         
         var savedState = localStorage.getItem('sermon_tracker_state');
-        if (!savedState) return;
+        var state;
         
-        try {
-          var state = JSON.parse(savedState);
-        } catch (e) {
-          console.log('Error parsing tracker state:', e);
-          return;
+        if (!savedState) {
+          // No saved state - check the default tracker UI to determine what to show
+          var trackerNodes = document.querySelectorAll('.tracker-node');
+          if (trackerNodes.length < 6) {
+            setTimeout(loadTrackerState, 100);
+            return;
+          }
+          
+          // Find which step is marked as current in the default UI
+          var currentIndex = -1;
+          for (var i = 0; i < trackerNodes.length; i++) {
+            if (trackerNodes[i].classList.contains('current')) {
+              currentIndex = i;
+              break;
+            }
+          }
+          
+          // Default state based on UI - if Plan is current, show Plan button
+          var stepOrder = ['study', 'plan', 'write', 'prepare', 'preach', 'content'];
+          var currentStep = currentIndex >= 0 && currentIndex < stepOrder.length ? stepOrder[currentIndex] : 'study';
+          state = {};
+          state[currentStep] = 'current';
+          
+          // Mark earlier steps as done
+          for (var j = 0; j < currentIndex; j++) {
+            state[stepOrder[j]] = 'done';
+          }
+          
+          console.log('No saved state, inferred from UI:', state);
+        } else {
+          try {
+            state = JSON.parse(savedState);
+          } catch (e) {
+            console.log('Error parsing tracker state:', e);
+            return;
+          }
         }
         
         console.log('Loading tracker state:', state);
