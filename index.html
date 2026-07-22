@@ -1908,6 +1908,12 @@
       var refreshTokenBtn = document.getElementById('get-refresh-token-btn');
       if (refreshTokenBtn) {
         refreshTokenBtn.addEventListener('click', function() {
+          // Check if Google OAuth library is loaded
+          if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+            alert('Google OAuth library not loaded yet. Try refreshing the page.');
+            return;
+          }
+
           refreshTokenBtn.textContent = 'Getting token...';
           refreshTokenBtn.disabled = true;
 
