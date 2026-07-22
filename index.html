@@ -876,7 +876,39 @@
       </div>
       <!-- Sermon content will be inserted here by the refresh skill -->
       <div id="sermon-content">
-        <!-- Sermon tracker will be rendered here -->
+<div class="sermon-nav">
+  <button class="sermon-nav-arrow" data-action="sermon-nav" data-dir="-1">←</button>
+  <span class="sermon-nav-date">Sunday, July 26, 2026 <span style="font-size:10.5px;font-weight:700;letter-spacing:0.04em;color:var(--accent);margin-left:8px;">THIS WEEK</span></span>
+  <button class="sermon-nav-arrow" data-action="sermon-nav" data-dir="1">→</button>
+</div>
+<div class="sermon-info">
+  <div class="info-field"><span class="info-label">Series</span><span class="info-value">James: The Wisdom of Faith</span></div>
+  <div class="info-field"><span class="info-label">Scripture</span><span class="info-value">James 5:7-12</span></div>
+  <div class="info-field"><span class="info-label">Main Idea</span><span class="info-value placeholder">Not yet entered</span></div>
+  <div class="info-field"><span class="info-label">Speaker</span><span class="info-value">Aaron Taylor</span></div>
+</div>
+<div class="tracker">
+  <div class="tracker-line"></div>
+  <div class="tracker-node done"><div class="tracker-dot"></div><span class="tracker-label">Study</span></div>
+  <div class="tracker-node current"><div class="tracker-dot"></div><span class="tracker-label">Plan</span></div>
+  <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Write</span></div>
+  <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Prepare</span></div>
+  <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Preach</span></div>
+  <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Content</span></div>
+</div>
+<div class="cta-row">
+  <button class="cta-button" data-action="queue-action" data-payload='{"type":"sermon-checkbox","date":"2026-07-26","phase":"study","item":"personal-study"}'>Personal Study of the Text</button>
+  <span class="cta-toast">Action queued</span>
+</div>
+<div class="finished-content">
+  <span class="subhead">Research</span>
+  <div class="finished-content-icons">
+    <a href="https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view?usp=drivesdk" target="_blank" class="deliverable-item" title="Research PDF">
+      <div class="deliverable-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+      <span class="deliverable-label">PDF</span>
+    </a>
+  </div>
+</div>
       </div>
     </section>
     <!-- WORSHIP_SECTION_END -->
@@ -889,6 +921,7 @@
       <!-- Check-in content will be inserted here by the refresh skill -->
       <div id="checkin-content">
         <!-- Check-in persons will be rendered here -->
+        <div class="empty-state">Everyone's been messaged in the last 60 days.</div>
       </div>
     </section>
     <!-- TEXT3_SECTION_END -->
@@ -916,7 +949,38 @@
       </div>
       <!-- Tasks content will be inserted here by the refresh skill -->
       <div class="task-list" id="task-list">
-        <!-- Tasks will be rendered here -->
+<div class="task-row">
+    <span class="task-text">Call Chelsea Fishback back about Subsplash API access<span class="task-source">manual, July 20</span></span>
+    <button class="icon-button" data-action="queue-action" data-payload='{"type":"mark-task-complete","text":"Call Chelsea Fishback back about Subsplash API access"}' aria-label="Mark complete" title="Mark Complete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+<div class="task-row">
+    <span class="task-text">Call Jill Friesen back at Southern Hobby Distribution<span class="task-source">manual, July 20</span></span>
+    <button class="icon-button" data-action="queue-action" data-payload='{"type":"mark-task-complete","text":"Call Jill Friesen back at Southern Hobby Distribution"}' aria-label="Mark complete" title="Mark Complete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+<div class="task-row">
+    <span class="task-text">Fill out the ACH Direct Deposit Authorization form for INUMC before the August disbursement<span class="task-source">manual, July 21</span></span>
+    <button class="icon-button" data-action="queue-action" data-payload='{"type":"mark-task-complete","text":"Fill out the ACH Direct Deposit Authorization form for INUMC before the August disbursement"}' aria-label="Mark complete" title="Mark Complete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+<div class="task-row">
+    <span class="task-text">Reconnect Subsplash's YouTube syndication before the July 26 Worship Gathering livestream<span class="task-source">manual, July 21</span></span>
+    <button class="icon-button" data-action="queue-action" data-payload='{"type":"mark-task-complete","text":"Reconnect Subsplash'\''s YouTube syndication before the July 26 Worship Gathering livestream"}' aria-label="Mark complete" title="Mark Complete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
       </div>
     </section>
     <!-- TASKS_SECTION_END -->
@@ -929,6 +993,7 @@
       <!-- Calendar content will be inserted here by the refresh skill -->
       <div class="items" id="calendar-items">
         <!-- Events will be rendered here -->
+        <div class="empty-state">Calendar data requires Google Calendar integration. Run the refresh skill with Google access to populate.</div>
       </div>
     </section>
     <!-- CALENDAR_SECTION_END -->
@@ -941,6 +1006,7 @@
       <!-- Email content will be inserted here by the refresh skill -->
       <ul class="items" id="email-items">
         <!-- Email threads will be rendered here -->
+        <div class="empty-state">Email data requires Gmail integration. Run the refresh skill with Google access to populate.</div>
       </ul>
     </section>
     <!-- EMAIL_SECTION_END -->
@@ -970,6 +1036,7 @@
       <!-- Prayer content will be inserted here by the refresh skill -->
       <ul class="items" id="prayer-items">
         <!-- Prayer requests will be rendered here -->
+        <div class="empty-state">No active prayer requests.</div>
       </ul>
     </section>
     <!-- PRAYER_SECTION_END -->
@@ -990,7 +1057,7 @@
 
   <script type="application/json" id="sermon-data">
     <!-- Sermon data JSON will be inserted here by the refresh skill -->
-    {"activeDate": "", "weeks": {}, "notStartedActiveHtml": "", "pastEmptyHtml": "", "futureEmptyHtml": ""}
+    {"activeDate": "2026-07-26", "weeks": {"2026-07-26": "<div class=\"sermon-nav\">\n  <button class=\"sermon-nav-arrow\" data-action=\"sermon-nav\" data-dir=\"-1\">←</button>\n  <span class=\"sermon-nav-date\">Sunday, July 26, 2026 <span style=\"font-size:10.5px;font-weight:700;letter-spacing:0.04em;color:var(--accent);margin-left:8px;\">THIS WEEK</span></span>\n  <button class=\"sermon-nav-arrow\" data-action=\"sermon-nav\" data-dir=\"1\">→</button>\n</div>\n<div class=\"sermon-info\">\n  <div class=\"info-field\"><span class=\"info-label\">Series</span><span class=\"info-value\">James: The Wisdom of Faith</span></div>\n  <div class=\"info-field\"><span class=\"info-label\">Scripture</span><span class=\"info-value\">James 5:7-12</span></div>\n  <div class=\"info-field\"><span class=\"info-label\">Main Idea</span><span class=\"info-value placeholder\">Not yet entered</span></div>\n  <div class=\"info-field\"><span class=\"info-label\">Speaker</span><span class=\"info-value\">Aaron Taylor</span></div>\n</div>\n<div class=\"tracker\">\n  <div class=\"tracker-line\"></div>\n  <div class=\"tracker-node done\"><div class=\"tracker-dot\"></div><span class=\"tracker-label\">Study</span></div>\n  <div class=\"tracker-node current\"><div class=\"tracker-dot\"></div><span class=\"tracker-label\">Plan</span></div>\n  <div class=\"tracker-node upcoming\"><div class=\"tracker-dot\"></div><span class=\"tracker-label\">Write</span></div>\n  <div class=\"tracker-node upcoming\"><div class=\"tracker-dot\"></div><span class=\"tracker-label\">Prepare</span></div>\n  <div class=\"tracker-node upcoming\"><div class=\"tracker-dot\"></div><span class=\"tracker-label\">Preach</span></div>\n  <div class=\"tracker-node upcoming\"><div class=\"tracker-dot\"></div><span class=\"tracker-label\">Content</span></div>\n</div>\n<div class=\"cta-row\">\n  <button class=\"cta-button\" data-action=\"queue-action\" data-payload='{\"type\":\"sermon-checkbox\",\"date\":\"2026-07-26\",\"phase\":\"study\",\"item\":\"personal-study\"}'>Personal Study of the Text</button>\n  <span class=\"cta-toast\">Action queued</span>\n</div>\n<div class=\"finished-content\">\n  <span class=\"subhead\">Research</span>\n  <div class=\"finished-content-icons\">\n    <a href=\"https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view?usp=drivesdk\" target=\"_blank\" class=\"deliverable-item\" title=\"Research PDF\">\n      <div class=\"deliverable-circle\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"></path><polyline points=\"14 2 14 8 20 8\"></polyline></svg></div>\n      <span class=\"deliverable-label\">PDF</span>\n    </a>\n  </div>\n</div>"}, "notStartedActiveHtml": "<div class=\"sermon-nav\">\n  <button class=\"sermon-nav-arrow\" data-action=\"sermon-nav\" data-dir=\"-1\">←</button>\n  <span class=\"sermon-nav-date\">Sunday, July 26, 2026 <span style=\"font-size:10.5px;font-weight:700;letter-spacing:0.04em;color:var(--accent);margin-left:8px;\">THIS WEEK</span></span>\n  <button class=\"sermon-nav-arrow\" data-action=\"sermon-nav\" data-dir=\"1\">→</button>\n</div>\n<div class=\"sermon-info\">\n  <div class=\"info-field\"><span class=\"info-label\">Series</span><span class=\"info-value placeholder\">Not started</span></div>\n  <div class=\"info-field\"><span class=\"info-label\">Scripture</span><span class=\"info-value placeholder\">—</span></div>\n  <div class=\"info-field\"><span class=\"info-label\">Main Idea</span><span class=\"info-value placeholder\">—</span></div>\n  <div class=\"info-field\"><span class=\"info-label\">Speaker</span><span class=\"info-value\">Aaron Taylor</span></div>\n</div>\n<div class=\"cta-row\">\n  <button class=\"cta-button\" data-action=\"toggle-start-form\" id=\"start-week-btn\">Start This Week's Sermon</button>\n</div>\n<div class=\"start-form\" id=\"start-form\">\n  <label>\n    Series\n    <input type=\"text\" id=\"start-series\" placeholder=\"e.g., James: The Wisdom of Faith\">\n  </label>\n  <label>\n    Scripture\n    <input type=\"text\" id=\"start-scripture\" placeholder=\"e.g., James 5:7-12\">\n  </label>\n  <label class=\"checkbox-label\">\n    <input type=\"checkbox\" id=\"start-new-series\">\n    New series (update templates)\n  </label>\n  <div class=\"new-series-fields\" id=\"new-series-fields\">\n    <label>\n      Bulletin Cover Template (optional)\n      <input type=\"text\" id=\"start-bulletin-link\" placeholder=\"Canva link\">\n    </label>\n    <label>\n      Slides Template (optional)\n      <input type=\"text\" id=\"start-slides-link\" placeholder=\"Canva link\">\n    </label>\n  </div>\n  <input type=\"hidden\" id=\"start-date\" value=\"2026-07-26\">\n  <button class=\"cta-button\" data-action=\"submit-start-form\">Begin Sermon Prep</button>\n</div>", "pastEmptyHtml": "<div class=\"empty-state\">No record for this week.</div>", "futureEmptyHtml": "<div class=\"empty-state\">Not started yet.</div>"}
   </script>
 
   <script>
