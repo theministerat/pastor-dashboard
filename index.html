@@ -1842,22 +1842,7 @@
         
         console.log('Starting Google Drive upload...');
         
-        // Check if popup is likely to be blocked
-        var popupTest = window.open('about:blank', '_blank', 'width=1,height=1');
-        if (!popupTest || popupTest.closed || typeof popupTest.closed === 'undefined') {
-          // Popup is likely blocked
-          console.warn('Popup blocker detected');
-          toast(window.document.body, 'Please allow popups for this site, then try again.');
-          var uploadNotesBtn = document.getElementById('upload-personal-notes-btn');
-          if (uploadNotesBtn) {
-            uploadNotesBtn.textContent = 'Upload Personal Notes';
-            uploadNotesBtn.disabled = false;
-          }
-          return;
-        }
-        popupTest.close();
-        
-        // Add a small delay to let the file chooser fully close before opening popup
+        // Add a longer delay to let the file chooser fully close before opening popup
         setTimeout(function() {
           // Initialize token client
           var tokenClient = google.accounts.oauth2.initTokenClient({
@@ -1891,7 +1876,7 @@
           console.log('Requesting access token...');
           // Request access token
           tokenClient.requestAccessToken();
-        }, 500); // 500ms delay to let file chooser close
+        }, 1000); // 1 second delay to let file chooser close
       }
       
       // Remove the OAuth redirect check since we're using popup
