@@ -2146,10 +2146,19 @@
           node.classList.add('upcoming');
         });
         
-        // Apply saved state
+        // Find which step is current - check the state object for 'current' value
         var stepOrder = ['study', 'plan', 'write', 'prepare', 'preach', 'content'];
-        var currentStep = state.current || state.write || state.plan || state.study || 'study';
-        var currentIndex = stepOrder.indexOf(currentStep);
+        var currentStep = 'study';
+        var currentIndex = 0;
+        
+        for (var key in state) {
+          if (state[key] === 'current') {
+            currentStep = key;
+            break;
+          }
+        }
+        
+        currentIndex = stepOrder.indexOf(currentStep);
         if (currentIndex === -1) currentIndex = 0;
         
         console.log('Current step:', currentStep, 'Index:', currentIndex);
@@ -2173,7 +2182,7 @@
         if (state.study === 'done' && studyRow) {
           studyRow.style.display = 'none';
         }
-        if ((state.plan === 'current' || state.plan === 'done') && planRow) {
+        if (state.plan === 'current' && planRow) {
           planRow.style.display = 'flex';
         }
         if (state.write === 'current' && planRow) {
