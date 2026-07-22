@@ -1842,10 +1842,26 @@
         
         console.log('Starting Google Drive upload...');
         
+        // Check if popup is likely to be blocked
+        var popupTest = window.open('about:blank', '_blank', 'width=1,height=1');
+        if (!popupTest || popupTest.closed || typeof popupTest.closed === 'undefined') {
+          // Popup is likely blocked
+          console.warn('Popup blocker detected');
+          toast(window.document.body, 'Please allow popups for this site, then try again.');
+          var uploadNotesBtn = document.getElementById('upload-personal-notes-btn');
+          if (uploadNotesBtn) {
+            uploadNotesBtn.textContent = 'Upload Personal Notes';
+            uploadNotesBtn.disabled = false;
+          }
+          return;
+        }
+        popupTest.close();
+        
         // Initialize token client
         var tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
           scope: SCOPES,
+          ux_mode: 'popup',
           callback: function(response) {
             console.log('OAuth callback received:', response);
             
@@ -1874,6 +1890,9 @@
         // Request access token
         tokenClient.requestAccessToken();
       }
+      
+      // Remove the OAuth redirect check since we're using popup
+      function checkForOAuthRedirect() { /* disabled */ }
       
       // Get the parent folder of the Research PDF
       function getResearchPDFFolder(accessToken, callback) {
