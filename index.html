@@ -978,9 +978,13 @@
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Preach</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Content</span></div>
 </div>
-<div class="cta-row">
+<div class="cta-row" id="study-cta-row">
   <button class="cta-button" id="upload-personal-notes-btn">Upload Personal Notes</button>
   <input type="file" id="personal-notes-file-input" accept=".pdf,.doc,.docx,.txt,.md,.docx" style="display:none;">
+  <span class="cta-toast">Action queued</span>
+</div>
+<div class="cta-row" id="plan-cta-row" style="display:none;">
+  <button class="cta-button" data-action="queue-sermon-brainstorm">Run Sermon Brainstorm</button>
   <span class="cta-toast">Action queued</span>
 </div>
 <div class="finished-content">
@@ -996,6 +1000,13 @@
         <span class="deliverable-step">Study</span>
         <div class="deliverable-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
         <span class="deliverable-label">Personal Notes</span>
+      </a>
+    </span>
+    <span id="sermon-brainstorm-deliverable" style="display:none;">
+      <a href="#" target="_blank" class="deliverable-item" id="sermon-brainstorm-link" title="Sermon Brainstorm">
+        <span class="deliverable-step">Plan</span>
+        <div class="deliverable-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></div>
+        <span class="deliverable-label">Sermon Brainstorm</span>
       </a>
     </span>
   </div>
@@ -1612,6 +1623,33 @@
           startCheckinText(el);
         } else if (action === 'sermon-nav') {
           sermonNav(parseInt(el.dataset.dir, 10) || 0);
+        } else if (action === 'queue-sermon-brainstorm') {
+          // Queue the sermon-brainstorm action
+          queueAction(el, { 
+            type: 'run-sermon-brainstorm',
+            researchPdfUrl: 'https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view',
+            personalNotesUrl: localStorage.getItem('personal_study_url') || ''
+          }, function() {
+            // Show the Sermon Brainstorm deliverable
+            var brainstormDeliverable = document.getElementById('sermon-brainstorm-deliverable');
+            if (brainstormDeliverable) {
+              brainstormDeliverable.style.display = 'inline-flex';
+            }
+            // Update tracker to show Write as current
+            var trackerNodes = document.querySelectorAll('.tracker-node');
+            if (trackerNodes.length >= 3) {
+              trackerNodes[1].classList.remove('current');
+              trackerNodes[1].classList.add('done');
+              trackerNodes[2].classList.remove('upcoming');
+              trackerNodes[2].classList.add('current');
+            }
+            // Save tracker state
+            localStorage.setItem('sermon_tracker_state', JSON.stringify({
+              study: 'done',
+              plan: 'done',
+              write: 'current'
+            }));
+          });
         } else if (action === 'queue-action') {
           var payload = {};
           try { payload = JSON.parse(el.dataset.payload || '{}'); } catch (e) { payload = {}; }
@@ -1826,6 +1864,27 @@
               if (notesDeliverable) {
                 notesDeliverable.style.display = 'inline-flex';
               }
+              
+              // Update tracker to show Plan as current
+              var trackerNodes = document.querySelectorAll('.tracker-node');
+              if (trackerNodes.length >= 2) {
+                trackerNodes[0].classList.remove('current');
+                trackerNodes[0].classList.add('done');
+                trackerNodes[1].classList.remove('upcoming');
+                trackerNodes[1].classList.add('current');
+              }
+              
+              // Show the Plan CTA row and hide Study CTA row
+              var studyCtaRow = document.getElementById('study-cta-row');
+              var planCtaRow = document.getElementById('plan-cta-row');
+              if (studyCtaRow) studyCtaRow.style.display = 'none';
+              if (planCtaRow) planCtaRow.style.display = 'flex';
+              
+              // Save tracker state
+              localStorage.setItem('sermon_tracker_state', JSON.stringify({
+                study: 'done',
+                plan: 'current'
+              }));
               
               toast(uploadNotesBtn, 'Personal Notes uploaded to Drive!');
             } else {
