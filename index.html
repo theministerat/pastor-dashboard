@@ -1799,7 +1799,15 @@
           uploadNotesBtn.textContent = 'Uploading...';
           uploadNotesBtn.disabled = true;
           
+          // Add timeout to show error if upload takes too long
+          var uploadTimeout = setTimeout(function() {
+            uploadNotesBtn.textContent = 'Upload Personal Notes';
+            uploadNotesBtn.disabled = false;
+            toast(uploadNotesBtn, 'Upload timed out. Check console for errors.');
+          }, 30000); // 30 second timeout
+          
           uploadToGoogleDrive(file, function(driveUrl) {
+            clearTimeout(uploadTimeout);
             uploadNotesBtn.textContent = 'Upload Personal Notes';
             uploadNotesBtn.disabled = false;
             personalNotesFileInput.value = ''; // Reset file input
@@ -1821,7 +1829,7 @@
               
               toast(uploadNotesBtn, 'Personal Notes uploaded to Drive!');
             } else {
-              toast(uploadNotesBtn, 'Upload failed. Try again.');
+              toast(uploadNotesBtn, 'Upload failed. Check console for errors.');
             }
           });
         });
@@ -1832,19 +1840,26 @@
         var CLIENT_ID = '164075956592-p6s7lrd3l9a66hg9smuvgm0ihtcqajfv.apps.googleusercontent.com';
         var SCOPES = 'https://www.googleapis.com/auth/drive.file';
         
+        console.log('Starting Google Drive upload...');
+        
         // Initialize token client
         var tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
           scope: SCOPES,
           callback: function(response) {
+            console.log('OAuth callback received:', response);
+            
             if (response.error !== undefined) {
+              console.error('OAuth error:', response.error);
               callback(null);
               return;
             }
             var accessToken = response.access_token;
+            console.log('Got access token, getting folder...');
             
             // First, get the parent folder of the Research PDF
             getResearchPDFFolder(accessToken, function(folderId) {
+              console.log('Got folder:', folderId);
               if (!folderId) {
                 // If we can't find the folder, upload to root
                 uploadFileToDrive(file, null, accessToken, callback);
@@ -1855,6 +1870,7 @@
           }
         });
         
+        console.log('Requesting access token...');
         // Request access token
         tokenClient.requestAccessToken();
       }
@@ -1863,7 +1879,10 @@
       function getResearchPDFFolder(accessToken, callback) {
         var fileId = '1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t';
         
+        console.log('getResearchPDFFolder called with token:', accessToken ? 'yes' : 'no');
+        
         if (!accessToken) {
+          console.error('No access token provided');
           callback(null);
           return;
         }
@@ -1872,14 +1891,17 @@
         xhr.open('GET', 'https://www.googleapis.com/drive/v3/files/' + fileId + '?fields=parents');
         xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
         xhr.onreadystatechange = function() {
+          console.log('getResearchPDFFolder xhr readyState:', xhr.readyState, 'status:', xhr.status);
           if (xhr.readyState === 4 && xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
+            console.log('Got folder response:', response);
             if (response.parents && response.parents.length > 0) {
               callback(response.parents[0]);
             } else {
               callback(null); // No parent folder
             }
           } else if (xhr.readyState === 4) {
+            console.error('Error getting folder, status:', xhr.status);
             callback(null); // Error, upload to root
           }
         };
@@ -1888,6 +1910,8 @@
       
       // Upload file to Google Drive
       function uploadFileToDrive(file, folderId, accessToken, callback) {
+        console.log('uploadFileToDrive called, folderId:', folderId);
+        
         var metadata = {
           'name': file.name,
           'mimeType': file.type || 'application/octet-stream'
@@ -1905,12 +1929,15 @@
         xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
         xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
         xhr.onreadystatechange = function() {
+          console.log('uploadFileToDrive xhr readyState:', xhr.readyState, 'status:', xhr.status);
           if (xhr.readyState === 4 && xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
+            console.log('Upload successful, response:', response);
             // Get the web view link
             var webViewLink = 'https://drive.google.com/file/d/' + response.id + '/view';
             callback(webViewLink);
           } else if (xhr.readyState === 4) {
+            console.error('Upload failed, status:', xhr.status, 'response:', xhr.responseText);
             callback(null);
           }
         };
