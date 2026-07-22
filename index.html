@@ -971,8 +971,8 @@
 </div>
 <div class="tracker">
   <div class="tracker-line"></div>
-  <div class="tracker-node current"><div class="tracker-dot"></div><span class="tracker-label">Study</span></div>
-  <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Plan</span></div>
+  <div class="tracker-node done"><div class="tracker-dot"></div><span class="tracker-label">Study</span></div>
+  <div class="tracker-node current"><div class="tracker-dot"></div><span class="tracker-label">Plan</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Write</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Prepare</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Preach</span></div>
@@ -983,7 +983,7 @@
   <input type="file" id="personal-notes-file-input" accept=".pdf,.doc,.docx,.txt,.md,.docx" style="display:none;">
   <span class="cta-toast">Action queued</span>
 </div>
-<div class="cta-row" id="plan-cta-row" style="display:none;">
+<div class="cta-row" id="plan-cta-row" style="display:flex;">
   <button class="cta-button" data-action="queue-sermon-brainstorm">Run Sermon Brainstorm</button>
   <span class="cta-toast">Action queued</span>
 </div>
@@ -1162,7 +1162,7 @@
   </div>
 <div class="task-row">
     <span class="task-text">Reconnect Subsplash's YouTube syndication before the July 26 Worship Gathering livestream<span class="task-source">manual, July 21</span></span>
-    <button class="icon-button" data-action="queue-action" data-payload='{"type":"mark-task-complete","text":"Reconnect Subsplash'\''s YouTube syndication before the July 26 Worship Gathering livestream"}' aria-label="Mark complete" title="Mark Complete">
+    <button class="icon-button" data-action="queue-action" data-payload='{"type":"mark-task-complete","text":"Reconnect Subsplash&#39;s YouTube syndication before the July 26 Worship Gathering livestream"}' aria-label="Mark complete" title="Mark Complete">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
@@ -1627,14 +1627,30 @@
         } else if (action === 'sermon-nav') {
           sermonNav(parseInt(el.dataset.dir, 10) || 0);
         } else if (action === 'queue-sermon-brainstorm') {
+          // Get the current week's date for the folder
+          var activeDate = SERMON_DATA && SERMON_DATA.activeDate ? SERMON_DATA.activeDate : new Date().toISOString().split('T')[0];
+          var weekFolder = activeDate; // YYYY-MM-DD format
+          
           // Store the action in localStorage for the cron to detect
           var brainstormAction = {
             type: 'run-sermon-brainstorm',
+            date: weekFolder,
             researchPdfUrl: 'https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view',
             personalNotesUrl: localStorage.getItem('personal_study_url') || '',
             timestamp: new Date().toISOString()
           };
           localStorage.setItem('pending_sermon_brainstorm', JSON.stringify(brainstormAction));
+          
+          // Also upload trigger file to Google Drive for automation
+          // This will appear in G:\Sermon Prep\trigger.json
+          uploadTriggerFile(brainstormAction, function(triggerUrl) {
+            if (triggerUrl) {
+              console.log('Trigger file uploaded to:', triggerUrl);
+              toast(el, 'Trigger sent! I\'ll process it shortly.');
+            } else {
+              console.log('Trigger file upload failed, but action is queued');
+            }
+          });
           
           // Queue the action
           queueAction(el, { 
@@ -2094,6 +2110,152 @@
           }
         }
       }
+
+      // Load persisted tracker state
+      function loadTrackerState() {
+        var savedState = localStorage.getItem('sermon_tracker_state');
+        if (!savedState) return;
+        
+        try {
+          var state = JSON.parse(savedState);
+        } catch (e) {
+          return;
+        }
+        
+        // Get tracker nodes
+        var trackerNodes = document.querySelectorAll('.tracker-node');
+        if (trackerNodes.length < 6) return;
+        
+        // Reset all nodes
+        trackerNodes.forEach(function(node) {
+          node.classList.remove('done', 'current', 'upcoming');
+          node.classList.add('upcoming');
+        });
+        
+        // Apply saved state
+        var stepOrder = ['study', 'plan', 'write', 'prepare', 'preach', 'content'];
+        var currentStep = state.current || state.write || state.plan || 'study';
+        var currentIndex = stepOrder.indexOf(currentStep);
+        
+        // Mark done steps
+        for (var i = 0; i < currentIndex; i++) {
+          trackerNodes[i].classList.remove('upcoming');
+          trackerNodes[i].classList.add('done');
+        }
+        
+        // Mark current step
+        if (currentIndex >= 0 && currentIndex < trackerNodes.length) {
+          trackerNodes[currentIndex].classList.remove('upcoming');
+          trackerNodes[currentIndex].classList.add('current');
+        }
+        
+        // Show/hide appropriate CTA buttons based on current step
+        var studyRow = document.getElementById('study-cta-row');
+        var planRow = document.getElementById('plan-cta-row');
+        
+        if (state.study === 'done' && studyRow) {
+          studyRow.style.display = 'none';
+        }
+        if ((state.plan === 'current' || state.plan === 'done') && planRow) {
+          planRow.style.display = 'flex';
+        }
+        if (state.write === 'current' && planRow) {
+          planRow.style.display = 'none';
+        }
+      }
+
+      // Upload trigger file to Google Drive for automation
+      function uploadTriggerFile(triggerData, callback) {
+        var CLIENT_ID = '164075956592-p6s7lrd3l9a66hg9smuvgm0ihtcqajfv.apps.googleusercontent.com';
+        var SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        
+        console.log('Uploading trigger file...');
+        
+        // Initialize token client
+        var tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          ux_mode: 'popup',
+          callback: function(response) {
+            if (response.error !== undefined) {
+              console.error('OAuth error:', response.error);
+              callback(null);
+              return;
+            }
+            var accessToken = response.access_token;
+            
+            // First, find or create the "Sermon Prep" folder
+            findOrCreateSermonPrepFolder(accessToken, function(folderId) {
+              if (!folderId) {
+                console.error('Could not find or create Sermon Prep folder');
+                callback(null);
+                return;
+              }
+              
+              // Create the trigger file content
+              var triggerContent = JSON.stringify(triggerData, null, 2);
+              var blob = new Blob([triggerContent], { type: 'application/json' });
+              var file = new File([blob], 'trigger.json', { type: 'application/json' });
+              
+              // Upload the trigger file
+              uploadFileToDrive(file, folderId, accessToken, function(driveUrl) {
+                console.log('Trigger file uploaded:', driveUrl);
+                callback(driveUrl);
+              });
+            });
+          }
+        });
+        
+        tokenClient.requestAccessToken();
+      }
+      
+      // Find or create the Sermon Prep folder
+      function findOrCreateSermonPrepFolder(accessToken, callback) {
+        // First, try to find existing folder
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://www.googleapis.com/drive/v3/files?q=name%3D%27Sermon%20Prep%27%20and%20mimeType%3D%27application%2Fvnd.google-apps.folder%27%20and%20trashed%3Dfalse');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.files && response.files.length > 0) {
+              // Folder exists
+              callback(response.files[0].id);
+            } else {
+              // Create the folder
+              createSermonPrepFolder(accessToken, callback);
+            }
+          } else if (xhr.readyState === 4) {
+            // Error, try to create folder anyway
+            createSermonPrepFolder(accessToken, callback);
+          }
+        };
+        xhr.send();
+      }
+      
+      // Create the Sermon Prep folder
+      function createSermonPrepFolder(accessToken, callback) {
+        var metadata = {
+          'name': 'Sermon Prep',
+          'mimeType': 'application/vnd.google-apps.folder'
+        };
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://www.googleapis.com/drive/v3/files');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            console.log('Created Sermon Prep folder:', response.id);
+            callback(response.id);
+          } else if (xhr.readyState === 4) {
+            console.error('Failed to create folder');
+            callback(null);
+          }
+        };
+        xhr.send(JSON.stringify(metadata));
+      }
       
       // Check for pending actions on page load
       function checkAndProcessPendingActions() {
@@ -2134,6 +2296,9 @@
       
       // Load persisted Personal Notes
       loadPersonalNotes();
+      
+      // Load persisted tracker state
+      loadTrackerState();
       
       // Check for pending sermon-brainstorm action and process it
       checkAndProcessPendingActions();
