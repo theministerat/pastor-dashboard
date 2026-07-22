@@ -2167,13 +2167,17 @@
         var studyRow = document.getElementById('study-cta-row');
         var planRow = document.getElementById('plan-cta-row');
         
+        // Hide study row when study is done (you're past it)
         if (state.study === 'done' && studyRow) {
           studyRow.style.display = 'none';
         }
+        
+        // Show plan row when on Plan step (current or done), hide when past Plan
         if (state.plan === 'current' && planRow) {
           planRow.style.display = 'flex';
-        }
-        if (state.write === 'current' && planRow) {
+        } else if (state.plan === 'done' && planRow) {
+          planRow.style.display = 'none';
+        } else if (state.write && planRow) {
           planRow.style.display = 'none';
         }
         
