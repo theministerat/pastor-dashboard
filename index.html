@@ -966,25 +966,33 @@
 </div>
 <div class="tracker">
   <div class="tracker-line"></div>
-  <div class="tracker-node done"><div class="tracker-dot"></div><span class="tracker-label">Study</span></div>
-  <div class="tracker-node current"><div class="tracker-dot"></div><span class="tracker-label">Plan</span></div>
+  <div class="tracker-node current"><div class="tracker-dot"></div><span class="tracker-label">Study</span></div>
+  <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Plan</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Write</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Prepare</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Preach</span></div>
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Content</span></div>
 </div>
 <div class="cta-row">
-  <button class="cta-button" data-action="queue-action" data-payload='{"type":"sermon-checkbox","date":"2026-07-26","phase":"study","item":"personal-study"}'>Personal Study of the Text</button>
+  <button class="cta-button" id="personal-study-btn">Personal Study of the Text</button>
+  <input type="file" id="personal-study-file" accept=".pdf,.doc,.docx,.txt,.md" style="display:none;">
   <span class="cta-toast">Action queued</span>
 </div>
 <div class="finished-content">
-  <span class="subhead">Research</span>
-  <div class="finished-content-icons">
+  <span class="subhead">This Week's Deliverables</span>
+  <div class="finished-content-icons" id="deliverables-container">
     <a href="https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view?usp=drivesdk" target="_blank" class="deliverable-item" title="Research PDF">
       <span class="deliverable-step">Study</span>
       <div class="deliverable-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
       <span class="deliverable-label">Research PDF</span>
     </a>
+    <span id="personal-notes-deliverable" style="display:none;">
+      <a href="#" target="_blank" class="deliverable-item" id="personal-notes-link" title="Personal Notes">
+        <span class="deliverable-step">Study</span>
+        <div class="deliverable-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
+        <span class="deliverable-label">Personal Notes</span>
+      </a>
+    </span>
   </div>
 </div>
       </div>
