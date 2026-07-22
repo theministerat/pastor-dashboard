@@ -2038,32 +2038,26 @@
         if (pendingBrainstorm) {
           console.log('Found pending sermon-brainstorm action');
           
-          // Call the webhook to notify Mavis
-          var webhookUrl = 'https://webhook.site/7dbe9c2a-8b0e-4421-b7d4-8d352a3eab78';
+          // Call Pushover to send a notification
+          var pushoverToken = 'avg96cdmu17hnhyim62ieh6cksqm73';
+          var pushoverUser = 'u4v3d4ozzw53jbakjayrivdxnca8gw';
           
-          fetch(webhookUrl, {
+          fetch('https://api.pushover.net/1/messages.json', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              action: 'sermon-brainstorm',
-              timestamp: new Date().toISOString(),
-              researchPdfUrl: 'https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view',
-              personalNotesUrl: localStorage.getItem('personal_study_url') || ''
+              token: pushoverToken,
+              user: pushoverUser,
+              title: 'Sermon Brainstorm Ready',
+              message: 'Click to process your sermon brainstorm'
             })
           }).then(function(response) {
-            console.log('Webhook called successfully');
-            toast(document.body, 'Webhook triggered - Mavis will process shortly');
+            console.log('Pushover notification sent');
+            toast(document.body, 'Notification sent!');
           }).catch(function(error) {
-            console.error('Webhook call failed:', error);
-            toast(document.body, 'Triggering Mavis...');
-            
-            // Fallback: copy prompt to clipboard
-            var prompt = 'Please process the pending sermon-brainstorm action.';
-            navigator.clipboard.writeText(prompt).then(function() {
-              toast(document.body, 'Paste prompt in chat');
-            });
+            console.error('Pushover call failed:', error);
           });
         }
       }
