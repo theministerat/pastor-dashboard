@@ -1857,38 +1857,41 @@
         }
         popupTest.close();
         
-        // Initialize token client
-        var tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          ux_mode: 'popup',
-          callback: function(response) {
-            console.log('OAuth callback received:', response);
-            
-            if (response.error !== undefined) {
-              console.error('OAuth error:', response.error);
-              callback(null);
-              return;
-            }
-            var accessToken = response.access_token;
-            console.log('Got access token, getting folder...');
-            
-            // First, get the parent folder of the Research PDF
-            getResearchPDFFolder(accessToken, function(folderId) {
-              console.log('Got folder:', folderId);
-              if (!folderId) {
-                // If we can't find the folder, upload to root
-                uploadFileToDrive(file, null, accessToken, callback);
-              } else {
-                uploadFileToDrive(file, folderId, accessToken, callback);
+        // Add a small delay to let the file chooser fully close before opening popup
+        setTimeout(function() {
+          // Initialize token client
+          var tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            ux_mode: 'popup',
+            callback: function(response) {
+              console.log('OAuth callback received:', response);
+              
+              if (response.error !== undefined) {
+                console.error('OAuth error:', response.error);
+                callback(null);
+                return;
               }
-            });
-          }
-        });
-        
-        console.log('Requesting access token...');
-        // Request access token
-        tokenClient.requestAccessToken();
+              var accessToken = response.access_token;
+              console.log('Got access token, getting folder...');
+              
+              // First, get the parent folder of the Research PDF
+              getResearchPDFFolder(accessToken, function(folderId) {
+                console.log('Got folder:', folderId);
+                if (!folderId) {
+                  // If we can't find the folder, upload to root
+                  uploadFileToDrive(file, null, accessToken, callback);
+                } else {
+                  uploadFileToDrive(file, folderId, accessToken, callback);
+                }
+              });
+            }
+          });
+          
+          console.log('Requesting access token...');
+          // Request access token
+          tokenClient.requestAccessToken();
+        }, 500); // 500ms delay to let file chooser close
       }
       
       // Remove the OAuth redirect check since we're using popup
