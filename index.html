@@ -987,6 +987,9 @@
   <button class="cta-button" data-action="queue-sermon-brainstorm">Run Sermon Brainstorm</button>
   <span class="cta-toast">Action queued</span>
 </div>
+<div class="cta-row" style="margin-top: 8px;">
+  <button class="cta-button" id="get-refresh-token-btn" style="background: var(--surface-raised); border: 1px solid var(--line); font-size: 11px; padding: 6px 12px;">⚙️ Get Refresh Token (for automation)</button>
+</div>
 <div class="finished-content">
   <span class="subhead">This Week's Deliverables</span>
   <div class="finished-content-icons" id="deliverables-container">
@@ -1900,7 +1903,61 @@
           });
         });
       }
-      
+
+      // Handle Get Refresh Token button click
+      var refreshTokenBtn = document.getElementById('get-refresh-token-btn');
+      if (refreshTokenBtn) {
+        refreshTokenBtn.addEventListener('click', function() {
+          refreshTokenBtn.textContent = 'Getting token...';
+          refreshTokenBtn.disabled = true;
+
+          var CLIENT_ID = '164075956592-p6s7lrd3l9a66hg9smuvgm0ihtcqajfv.apps.googleusercontent.com';
+          var SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+          // Try to get offline access (refresh token)
+          var tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            ux_mode: 'popup',
+            access_type: 'offline',  // Request offline access for refresh token
+            prompt: 'consent',       // Force consent to ensure we get a refresh token
+            callback: function(response) {
+              refreshTokenBtn.textContent = '⚙️ Get Refresh Token (for automation)';
+              refreshTokenBtn.disabled = false;
+
+              if (response.error !== undefined) {
+                console.error('OAuth error:', response);
+                toast(refreshTokenBtn, 'Error: ' + response.error);
+                return;
+              }
+
+              // Check if we got a refresh token
+              if (response.refresh_token) {
+                console.log('Got refresh token:', response.refresh_token);
+
+                // Store in localStorage for now (Mavis can read from there or user can copy)
+                localStorage.setItem('drive_refresh_token', response.refresh_token);
+
+                // Show the refresh token to the user
+                var tokenMessage = 'Refresh Token:\n\n' + response.refresh_token + '\n\nCopy this and say "here's my refresh token" to Mavis so it can access Drive automatically!';
+                alert(tokenMessage);
+                toast(refreshTokenBtn, 'Refresh token saved! Copy and give to Mavis.');
+              } else {
+                // No refresh token in response - this can happen
+                console.log('Response:', response);
+                toast(refreshTokenBtn, 'No refresh token in response. Check console.');
+                alert('No refresh token was returned. This sometimes happens.\n\nResponse: ' + JSON.stringify(response, null, 2));
+              }
+            }
+          });
+
+          // Add a small delay before triggering the popup
+          setTimeout(function() {
+            tokenClient.requestAccessToken();
+          }, 500);
+        });
+      }
+
       // Google Drive upload function
       function uploadToGoogleDrive(file, callback) {
         var CLIENT_ID = '164075956592-p6s7lrd3l9a66hg9smuvgm0ihtcqajfv.apps.googleusercontent.com';
@@ -2037,27 +2094,25 @@
         var pendingBrainstorm = localStorage.getItem('pending_sermon_brainstorm');
         if (pendingBrainstorm) {
           console.log('Found pending sermon-brainstorm action');
-          
-          // Call Pushover to send a notification
-          var pushoverToken = 'avg96cdmu17hnhyim62ieh6cksqm73';
-          var pushoverUser = 'u4v3d4ozzw53jbakjayrivdxnca8gw';
-          
-          fetch('https://api.pushover.net/1/messages.json', {
+
+          // Call Discord webhook to send a notification
+          var discordWebhookUrl = 'https://discord.com/api/webhooks/1529516105788297228/kZeTMvzXn41xWWGCNWVgfa5zaM-isyprX5Q2ZMMc1Yi_54SFqI-Cd4tU7qnayzMkvG-3';
+
+          fetch(discordWebhookUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              token: pushoverToken,
-              user: pushoverUser,
-              title: 'Sermon Brainstorm Ready',
-              message: 'Click to process your sermon brainstorm'
+              content: '🎙️ **Sermon Brainstorm Ready**\n\nClick your Pastor Dashboard to process your sermon brainstorm.',
+              username: 'Pastor Dashboard',
+              avatar_url: 'https://i.imgur.com/AfFp7pu.png'
             })
           }).then(function(response) {
-            console.log('Pushover notification sent');
-            toast(document.body, 'Notification sent!');
+            console.log('Discord notification sent');
+            toast(document.body, 'Discord notification sent!');
           }).catch(function(error) {
-            console.error('Pushover call failed:', error);
+            console.error('Discord call failed:', error);
           });
         }
       }
