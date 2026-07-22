@@ -975,7 +975,6 @@
 </div>
 <div class="cta-row">
   <button class="cta-button" id="upload-personal-notes-btn">Upload Personal Notes</button>
-  <input type="file" id="personal-study-file" accept=".pdf,.doc,.docx,.txt,.md" style="display:none;">
   <span class="cta-toast">Action queued</span>
 </div>
 <div class="finished-content">
@@ -1781,41 +1780,43 @@
       // Handle Personal Notes upload button click
       var uploadNotesBtn = document.getElementById('upload-personal-notes-btn');
       var personalStudyFile = document.getElementById('personal-study-file');
-      if (uploadNotesBtn && personalStudyFile) {
+      if (uploadNotesBtn) {
         uploadNotesBtn.addEventListener('click', function() {
-          personalStudyFile.click();
-        });
-        
-        personalStudyFile.addEventListener('change', function(e) {
-          var file = e.target.files[0];
-          if (!file) return;
-          
-          // Show the Personal Notes deliverable
-          var notesDeliverable = document.getElementById('personal-notes-deliverable');
-          if (notesDeliverable) {
-            notesDeliverable.style.display = 'inline-flex';
+          // Show prompt for Google Drive URL
+          var currentUrl = localStorage.getItem('personal_study_url') || '';
+          var url = prompt('Paste your Google Drive URL for your Personal Notes:', currentUrl);
+          if (url && url.trim()) {
+            url = url.trim();
+            localStorage.setItem('personal_study_url', url);
+            
+            // Update the link href
+            var notesLink = document.getElementById('personal-notes-link');
+            if (notesLink) {
+              notesLink.href = url;
+            }
+            
+            // Show the Personal Notes deliverable
+            var notesDeliverable = document.getElementById('personal-notes-deliverable');
+            if (notesDeliverable) {
+              notesDeliverable.style.display = 'inline-flex';
+            }
+            
+            toast(uploadNotesBtn, 'Personal Notes link saved');
           }
-          
-          // Store file info in localStorage
-          var fileInfo = {
-            name: file.name,
-            lastModified: file.lastModified,
-            size: file.size,
-            type: file.type
-          };
-          localStorage.setItem('personal_study_file', JSON.stringify(fileInfo));
-          
-          toast(uploadNotesBtn, 'Personal Notes added: ' + file.name);
         });
       }
 
       // Load persisted Personal Notes
       function loadPersonalNotes() {
-        var savedFile = localStorage.getItem('personal_study_file');
-        if (savedFile) {
+        var savedUrl = localStorage.getItem('personal_study_url');
+        if (savedUrl) {
           var notesDeliverable = document.getElementById('personal-notes-deliverable');
           if (notesDeliverable) {
             notesDeliverable.style.display = 'inline-flex';
+          }
+          var notesLink = document.getElementById('personal-notes-link');
+          if (notesLink) {
+            notesLink.href = savedUrl;
           }
         }
       }
