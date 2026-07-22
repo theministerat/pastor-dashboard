@@ -974,7 +974,7 @@
   <div class="tracker-node upcoming"><div class="tracker-dot"></div><span class="tracker-label">Content</span></div>
 </div>
 <div class="cta-row">
-  <button class="cta-button" id="personal-study-btn">Personal Study of the Text</button>
+  <button class="cta-button" id="upload-personal-notes-btn">Upload Personal Notes</button>
   <input type="file" id="personal-study-file" accept=".pdf,.doc,.docx,.txt,.md" style="display:none;">
   <span class="cta-toast">Action queued</span>
 </div>
@@ -1778,6 +1778,48 @@
         });
       }
 
+      // Handle Personal Notes upload button click
+      var uploadNotesBtn = document.getElementById('upload-personal-notes-btn');
+      var personalStudyFile = document.getElementById('personal-study-file');
+      if (uploadNotesBtn && personalStudyFile) {
+        uploadNotesBtn.addEventListener('click', function() {
+          personalStudyFile.click();
+        });
+        
+        personalStudyFile.addEventListener('change', function(e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          
+          // Show the Personal Notes deliverable
+          var notesDeliverable = document.getElementById('personal-notes-deliverable');
+          if (notesDeliverable) {
+            notesDeliverable.style.display = 'inline-flex';
+          }
+          
+          // Store file info in localStorage
+          var fileInfo = {
+            name: file.name,
+            lastModified: file.lastModified,
+            size: file.size,
+            type: file.type
+          };
+          localStorage.setItem('personal_study_file', JSON.stringify(fileInfo));
+          
+          toast(uploadNotesBtn, 'Personal Notes added: ' + file.name);
+        });
+      }
+
+      // Load persisted Personal Notes
+      function loadPersonalNotes() {
+        var savedFile = localStorage.getItem('personal_study_file');
+        if (savedFile) {
+          var notesDeliverable = document.getElementById('personal-notes-deliverable');
+          if (notesDeliverable) {
+            notesDeliverable.style.display = 'inline-flex';
+          }
+        }
+      }
+
       // Initialize sermon data
       loadSermonData();
       if (SERMON_DATA && SERMON_DATA.activeDate) {
@@ -1786,6 +1828,9 @@
 
       // Load check-in states from localStorage
       loadCheckinStates();
+      
+      // Load persisted Personal Notes
+      loadPersonalNotes();
 
       // Log initialization
       console.log('Aaron\'s Personal Dashboard initialized');
