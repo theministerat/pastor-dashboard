@@ -2111,20 +2111,34 @@
         }
       }
 
-      // Load persisted tracker state
+      // Load persisted tracker state - run after page is fully loaded
       function loadTrackerState() {
+        // Wait for everything to load
+        if (typeof SERMON_DATA === 'undefined') {
+          // Try again in a moment if SERMON_DATA not ready
+          setTimeout(loadTrackerState, 100);
+          return;
+        }
+        
         var savedState = localStorage.getItem('sermon_tracker_state');
         if (!savedState) return;
         
         try {
           var state = JSON.parse(savedState);
         } catch (e) {
+          console.log('Error parsing tracker state:', e);
           return;
         }
         
-        // Get tracker nodes
+        console.log('Loading tracker state:', state);
+        
+        // Get tracker nodes - wait a bit for DOM to be ready
         var trackerNodes = document.querySelectorAll('.tracker-node');
-        if (trackerNodes.length < 6) return;
+        if (trackerNodes.length < 6) {
+          console.log('Tracker nodes not found, trying again...');
+          setTimeout(loadTrackerState, 100);
+          return;
+        }
         
         // Reset all nodes
         trackerNodes.forEach(function(node) {
@@ -2134,8 +2148,11 @@
         
         // Apply saved state
         var stepOrder = ['study', 'plan', 'write', 'prepare', 'preach', 'content'];
-        var currentStep = state.current || state.write || state.plan || 'study';
+        var currentStep = state.current || state.write || state.plan || state.study || 'study';
         var currentIndex = stepOrder.indexOf(currentStep);
+        if (currentIndex === -1) currentIndex = 0;
+        
+        console.log('Current step:', currentStep, 'Index:', currentIndex);
         
         // Mark done steps
         for (var i = 0; i < currentIndex; i++) {
@@ -2162,6 +2179,8 @@
         if (state.write === 'current' && planRow) {
           planRow.style.display = 'none';
         }
+        
+        console.log('Tracker state loaded successfully');
       }
 
       // Upload trigger file to Google Drive for automation
