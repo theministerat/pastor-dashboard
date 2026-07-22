@@ -1624,11 +1624,18 @@
         } else if (action === 'sermon-nav') {
           sermonNav(parseInt(el.dataset.dir, 10) || 0);
         } else if (action === 'queue-sermon-brainstorm') {
-          // Queue the sermon-brainstorm action
-          queueAction(el, { 
+          // Store the action in localStorage for the cron to detect
+          var brainstormAction = {
             type: 'run-sermon-brainstorm',
             researchPdfUrl: 'https://drive.google.com/file/d/1RRRpQ7i5T2Mf5cpM80tDL8gLRzSrlJ3t/view',
-            personalNotesUrl: localStorage.getItem('personal_study_url') || ''
+            personalNotesUrl: localStorage.getItem('personal_study_url') || '',
+            timestamp: new Date().toISOString()
+          };
+          localStorage.setItem('pending_sermon_brainstorm', JSON.stringify(brainstormAction));
+          
+          // Queue the action
+          queueAction(el, { 
+            type: 'run-sermon-brainstorm'
           }, function() {
             // Show the Sermon Brainstorm deliverable
             var brainstormDeliverable = document.getElementById('sermon-brainstorm-deliverable');
@@ -2024,6 +2031,26 @@
           }
         }
       }
+      
+      // Check for pending actions on page load
+      function checkAndProcessPendingActions() {
+        var pendingBrainstorm = localStorage.getItem('pending_sermon_brainstorm');
+        if (pendingBrainstorm) {
+          console.log('Found pending sermon-brainstorm action');
+          
+          // Show a notification that we're processing
+          toast(document.body, 'Processing sermon brainstorm...');
+          
+          // Copy a prompt to clipboard for Mavis to process
+          var prompt = 'Please process the pending sermon-brainstorm action. Check localStorage key "pending_sermon_brainstorm" for the details. Read the research PDF and personal notes from Google Drive, run the sermon-brainstorm skill, create a PDF with the output, upload it to the same Drive folder, and update the dashboard with the link.';
+          
+          navigator.clipboard.writeText(prompt).then(function() {
+            toast(document.body, 'Processing queued - paste prompt in chat');
+          }).catch(function() {
+            showCopyFallback(prompt, 'Copy this prompt and paste in chat with Mavis to process:');
+          });
+        }
+      }
 
       // Initialize sermon data
       loadSermonData();
@@ -2036,6 +2063,9 @@
       
       // Load persisted Personal Notes
       loadPersonalNotes();
+      
+      // Check for pending sermon-brainstorm action and process it
+      checkAndProcessPendingActions();
 
       // Log initialization
       console.log('Aaron\'s Personal Dashboard initialized');
